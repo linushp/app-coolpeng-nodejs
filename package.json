@@ -1,22 +1,21 @@
 {
-  "name": "app.coolpeng.node",
-  "version": "1.0.0",
-  "description": "nodejs blog",
-  "main": "index.js",
+  "name": "app-coolpeng-node",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www",
+    "install_1":"npm install -g express",
+    "install_2":"npm install -g express-generator",
+    "install_3":"npm install"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/luanhaipeng/app-coolpeng-nodejs.git"
-  },
-  "keywords": [
-    "blog"
-  ],
-  "author": "luan",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/luanhaipeng/app-coolpeng-nodejs/issues"
-  },
-  "homepage": "https://github.com/luanhaipeng/app-coolpeng-nodejs#readme"
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "ejs": "~2.3.3",
+    "express": "~4.13.1",
+    "morgan": "~1.6.1",
+    "serve-favicon": "~2.3.0",
+    "socket.io":"*"
+  }
 }
