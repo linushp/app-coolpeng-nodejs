@@ -1,0 +1,22 @@
+{
+  "name": "app.coolpeng.node",
+  "version": "1.0.0",
+  "description": "nodejs blog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luanhaipeng/app-coolpeng-nodejs.git"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "luan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luanhaipeng/app-coolpeng-nodejs/issues"
+  },
+  "homepage": "https://github.com/luanhaipeng/app-coolpeng-nodejs#readme"
+}
