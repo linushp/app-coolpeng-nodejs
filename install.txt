@@ -1,0 +1,8 @@
+1、安装mongoDB
+2、创建F:\svn-coolpeng\app-coolpeng-node-db文件夹
+3、到mongoDB目录下执行命令,启动服务。
+    mongod.exe --dbpath F:\svn-coolpeng\app-coolpeng-node-db
+4、默认的mongo客户端
+    C:\Program Files\MongoDB\Server\3.2\bin>mongo.exe
+5、牛逼的mongo客户端
+    Robomongo
