@@ -1,0 +1,47 @@
+<div id="blog-index">
+
+    <div class="post-list" style="float: left">
+    <%
+        for (var i = 0 ; i < postList.length;i++){
+            var post = postList[i];
+            %>
+            <div>
+                <a class="post-item-link" href="/blog/post/<%=post.id%>"><%=post.title%></a>
+            </div>
+            <%
+        }
+    %>
+    </div>
+
+    <div class="post-content" style="float: left">
+
+    </div>
+
+
+
+    <div class="create-post">
+        <div class="create-post-msg"></div>
+        <table>
+            <tr>
+                <td>标题</td>
+                <td><input type="text" name="title"></td>
+            </tr>
+            <tr>
+                <td>内容</td>
+                <td>
+                    <textarea name="content"  cols="30" rows="10"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <button class="create-post-submit">提交</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+</div>

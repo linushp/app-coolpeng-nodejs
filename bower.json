@@ -1,0 +1,20 @@
+{
+  "name": "app-coolpeng-node",
+  "description": "",
+  "main": "",
+  "authors": [
+    "luan"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/luanhaipeng/app-coolpeng-nodejs",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "*"
+  }
+}

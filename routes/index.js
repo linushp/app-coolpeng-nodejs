@@ -1,10 +1,11 @@
 var express = require('express');
-var Topic = require("./models/topic").Topic;
-var Post = require("./models/post").Post;
-var mongoose = require('mongoose');
+var BlogTopic = require("./models/BlogModels").BlogTopic;
+//var mongoose = require('mongoose');
 //var db = global.mongooseDB;
 
 var router = express.Router();
+
+var postList = [];
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -27,13 +28,26 @@ router.get('/', function(req, res, next) {
   //});
 
 
-  Topic.count(function(err,count){
+  if(postList.length===0){
 
-    Topic.find({_id:'57483a30c041b3f839d8c62a'},function(err,doc){
-      res.render('index', { title: 'Express' + count,postList:doc });
+    BlogTopic.count(function(err,count){
+
+      BlogTopic.find(function(err,doc){
+
+        //var postList = [];
+        for (var i = 0; i < doc.length && i <10; i++) {
+          var dd = doc[i];
+          postList.push({title:dd.title,id:dd.id})
+        }
+
+        res.render('index', {layout:"layout", title: 'Express' + count,postList:postList });
+      });
+
     });
+  }else {
+    res.render('index', {layout:"layout", title: 'Express' ,postList:postList });
+  }
 
-  });
 
 
 
