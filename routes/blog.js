@@ -6,7 +6,6 @@ var BlogTopic = require("./models/BlogModels").BlogTopic;
 var cpPage = require("./utils/cp-page");
 var cpUtil = require("./utils/cp-util");
 var toJsPostList = cpUtil.toJsPostList;
-var getLayout = cpUtil.getLayout;
 
 
 /**
@@ -37,7 +36,7 @@ router.get('/', function (req, res, next) {
         function(err,result){
             var topicList = result[0];
             var recordCount = result[1];
-            var postList = toJsPostList(result[2] || []);
+            var postList = toJsPostList(result[2] || [],true);
 
             var pageCount = parseInt(recordCount / pageSize, 10);
             pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
@@ -51,7 +50,6 @@ router.get('/', function (req, res, next) {
             });
 
             res.smartRender('blog/index', {
-                layout: getLayout(req),
                 title: 'Express',
                 topicList:topicList,
                 postList: postList,
@@ -73,11 +71,11 @@ router.get('/post/:id', function (req, res, next) {
 
     BlogPost.find({_id: id}, function (err, doc) {
         if (doc && doc.length > 0) {
-            var postList = toJsPostList(doc);
+            var postList = toJsPostList(doc,false);
             var post = postList[0];
-            res.smartRender('blog/post', {layout: getLayout(req), title: 'Express', post: post});
+            res.smartRender('blog/post', {title: 'Express', post: post});
         } else {
-            res.smartRender('blog/post', {layout: getLayout(req), title: 'Express', post: {title: "没有找到"}});
+            res.smartRender('blog/post', {title: 'Express', post: {title: "没有找到"}});
         }
     });
 

@@ -15,6 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "*"
+    "jquery": "*",
+    "ejs":"*"
   }
 }

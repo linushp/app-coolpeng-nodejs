@@ -21,9 +21,12 @@
                 <td>板块</td>
                 <td>
                     <select>
-
-                        <option></option>
-
+                        <% for (var i=0;i< topicList.length; i++){
+                            var topic = topicList[i];
+                            %>
+                                <option value="<%=topic.topicId%>"><%=topic.title%></option>
+                            <%
+                        }%>
                     </select>
                 </td>
             </tr>

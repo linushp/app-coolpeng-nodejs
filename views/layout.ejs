@@ -1,34 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title><%= title %></title>
+    <meta charset="UTF-8">
+    <meta http-equiv='X-UA-Compatible' content='IE=EDGE'>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE;chrome=1">
 
-    <link rel='stylesheet' href='/public/lib/laypage/skin/laypage.css' />
+    <meta name="keywords" content="栾海鹏,技术博客，web前端，nodejs">
+    <meta name="description" content="栾海鹏，技术博客，web前端">
 
-    <link rel='stylesheet' href='/public/src/css/style.css'/>
+    <link rel='stylesheet' href='/public/lib/layer/skin/layer.css' type="text/css" media="all"/>
+    <link rel='stylesheet' id="my-css" href='/public/src/theme/style.css' type="text/css" media="all"/>
+    <link rel="stylesheet" id="fontello-css" href="/public/src/theme/fontello.css" type="text/css" media="all">
 </head>
-<body>
+<body class="home blog off-canvas-nav-left">
 
-    <div class="mian-header">
-        <ul>
-            <li><a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
-            <li><a href="/blog" class="ajax-link" ajax-target=".main-body">博客</a></li>
-            <li><a href="/album" class="ajax-link" ajax-target=".main-body">图片</a></li>
-            <li><a href="/favorite" class="ajax-link" ajax-target=".main-body">收藏</a></li>
-        </ul>
-    </div>
 
-    <div class="main-body">
-        <%- body %>
-    </div>
+        <div id="header" class="">
+            <div class="container">
+                <h1 class="logo">
+                    <a href="/" title="<%= title %>">
+                        <img src="/public/src/theme/img/logo.png" alt="<%= title %>">
+                    </a>
 
-    <div class="main-footer">
-    </div>
+                </h1>
+                <div role="navigation" class="site-nav  primary-menu">
+                    <div class="menu-fix-box">
+                        <ul id="menu-navigation" class="menu">
+                            <li class="current-menu-item">
+                                <a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
+                            <li><a href="/blog" class="ajax-link"  ajax-target=".main-body">博客</a></li>
+                            <li><a href="/album" class="ajax-link" ajax-target=".main-body">图片</a></li>
+                            <li><a href="/favorite" class="ajax-link" ajax-target=".main-body">收藏夹</a></li>
+                            <li><a href="/notes" class="ajax-link" ajax-target=".main-body">记事本</a></li>
+                            <li class="menu-item-has-children">
+                                <a href="/" class="ajax-link" ajax-target=".main-body">首页</a>
+                                <ul class="sub-menu">
+                                    <li><a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
+                                    <li><a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
+                                    <li><a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <form action="/search">
+                        <input class="form-search" type="text" name="s" placeholder="Search...">
+                        <button><i class="icon-search"></i></button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+        <div id="page-content" >
+            <div class="container main-body" >
+                <%- body %>
+            </div>
+        </div>
+
+
+
+
+
+        <div id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="inner clearfix">
+                        <div id="footer-copyright">Copyright © 2016
+                            <a class="site-link" href="/" title="coolpeng" rel="home">coolpeng</a>
+                            <br>All Rights Reserved BY <a href="/">Luan</a>
+                        </div>
+                        <div id="footer-links">
+                            <a href="/" class="footer-link" target="_blank" title="新浪微博"><i class="icon-weibo"></i></a>
+                            <a href="/" target="_blank" class="footer-link" rel="nofollow"
+                               title="腾讯微博">
+                                <i class="icon-tencent-weibo"></i></a>
+                            <div class="dropdown-menu-part">
+                                <a id="tooltip-mail-2" href="javascript:void(0);" onclick="return false;"
+                                   class="footer-link" target="_blank"><i class="icon-mail-2"></i></a>
+                                <div class="dropdown-menu f-qq-dropdown">
+                                    <p>910010653@qq.com</p>
+                                </div>
+                            </div>
+                            <div class="dropdown-menu-part">
+                                <a id="tooltip-f-qq" href="javascript:void(0);" onclick="return false;"
+                                   class="footer-link" target="_blank"><i class="icon-qq"></i></a>
+                                <div class="dropdown-menu f-qq-dropdown">
+                                    <p>QQ：910010653</p>
+                                </div>
+                            </div>
+                            <div class="dropdown-menu-part">
+                                <a id="tooltip-f-weixin" href="javascript:void(0);" onclick="return false;"
+                                   class="footer-link" target="_blank"><i class="icon-wechat"></i></a>
+                                <div class="dropdown-menu f-weixin-dropdown">
+                                    <div class="tooltip-weixin-inner">
+                                        <p style="font-size: 16px; color: #333;">微信公众号</p>
+                                        <p>扫描下方二维码或者搜索二维码下方的微信公众号</p>
+                                        <div class="qcode">
+                                            <img src="/public/src/theme/img/weixin-luan.jpg" width="160" height="160"
+                                                 alt="微信公众号">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/bower_components/ejs/ejs.min.js"></script>
-    <script src="/public/src/js/ajax-link.js"></script>
-    <script src="/public/src/js/blog-index.js"></script>
+    <%
+        if(_ENVIRONMENT=="development"){
+        %>
+            <script src="/bower_components/ejs/ejs.min.js"></script>
+            <script src="/public/lib/layer/layer.js"></script>
+            <script src="/public/src/theme/theme.js"></script>
+            <script src="/public/src/js/ajax-link.js"></script>
+            <script src="/public/src/js/blog-index.js"></script>
+        <%
+        }else{
+        %>
+            <script src="/public/release/js/coolpeng.min.js"></script>
+        <%
+        }
+    %>
+
+
 </body>
 </html>

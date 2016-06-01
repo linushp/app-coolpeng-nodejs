@@ -6,3 +6,6 @@
     C:\Program Files\MongoDB\Server\3.2\bin>mongo.exe
 5、牛逼的mongo客户端
     Robomongo
+6、我要抄的模板
+    http://grace.wpbyg.com/
+    http://www.wpmee.com/blogtheme/

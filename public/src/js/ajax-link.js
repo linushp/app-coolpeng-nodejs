@@ -9,7 +9,7 @@
         //给链接绑定事件
         if (window.history.pushState) {
 
-            var ajax, firstState;
+            var ajaxHandler, firstState;
 
             var templateCache = {};
 
@@ -26,7 +26,7 @@
 
                 var $ajaxTarget = $(ajaxTarget);
 
-                if (!ajax) {
+                if (!ajaxHandler) {
                     firstState = {
                         url: document.location.href,
                         title: document.title,
@@ -43,13 +43,16 @@
                     $ajaxTarget.html("loading...");
                 },500);
 
-                var ajaxHtmlSuccess = function(html){
-                    window.clearTimeout(loadingTimeout);
-                    $ajaxTarget.html(html);
+                var ajaxHtmlSuccess = function(html,data){
+                    if(loadingTimeout){
+                        window.clearTimeout(loadingTimeout);
+                    }
+                    data = data||{};
 
+                    $ajaxTarget.html(html);
                     var state = {
                         url: href,
-                        title: $link.html(),
+                        title: data.title || $link.html(),
                         html: html,
                         ajaxTarget: ajaxTarget
                     };
@@ -57,7 +60,7 @@
                     window.history.pushState(state, null, href);
                 };
 
-                var ajaxHandler = $.ajax({
+                 ajaxHandler = $.ajax({
                     url:href,
                     dataType: "json",
                     type:"get",
@@ -70,9 +73,9 @@
                         }else {
                             template = templateCache[templateName];
                         }
-                        var data = mm.data;
+                        var data = mm.data ||{};
                         var html = ejs.render(template, data);
-                        ajaxHtmlSuccess(html);
+                        ajaxHtmlSuccess(html,data);
                     },
                     complete : function(XMLHttpRequest,status){
                         if(status=='timeout'){
@@ -80,7 +83,7 @@
                         }
                     },
                     beforeSend: function(XMLHttpRequest) {
-                        var templateName = config.getTemplateName(href);
+                        var templateName = config.getTemplateName(href,$link);
                         var template = null;
                         if(templateName){
                             template = templateCache[templateName];
@@ -95,7 +98,7 @@
 
 
 
-                //ajax = $.get(href, function (html) {
+                //ajaxHandler = $.get(href, function (html) {
                 //    ajaxHtmlSuccess(html);
                 //}, "html");
 
@@ -103,7 +106,7 @@
 
 
             window.addEventListener("popstate", function (event) {
-                if (ajax == null) {
+                if (ajaxHandler == null) {
                 } else if (event && event.state) {
                     document.title = event.state.title;
                     var $ajaxTarget = $(event.state.ajaxTarget);

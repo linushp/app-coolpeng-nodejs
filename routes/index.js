@@ -1,8 +1,8 @@
+var fs = require('fs');
 var express = require('express');
 var BlogTopic = require("./models/BlogModels").BlogTopic;
 var cpUtil = require("./utils/cp-util");
 var toJsPostList = cpUtil.toJsPostList;
-var getLayout = cpUtil.getLayout;
 
 var router = express.Router();
 
@@ -41,18 +41,21 @@ router.get('/', function(req, res, next) {
           postList.push({title:dd.title,id:dd.id})
         }
 
-        res.smartRender('index', {layout:getLayout(req), title: 'Express' + count,postList:postList });
+        res.smartRender('index', {title: 'Express' + count,postList:postList });
       });
 
     });
   }else {
-    res.smartRender('index', {layout:getLayout(req), title: 'Express' ,postList:postList });
+    res.smartRender('index', {title: 'Express' ,postList:postList });
   }
 
 
+});
 
 
-
+/* GET home page. */
+router.get('/favicon.ico', function(req, res, next) {
+  res.end("");
 });
 
 module.exports = router;
