@@ -6,22 +6,27 @@
             var post = postList[i];
             %>
             <div>
-                <a class="post-item-link" href="/blog/post/<%=post.id%>"><%=post.title%></a>
+                <a class="ajax-link" ajax-target=".main-body" href="/blog/post/<%=post.id%>"><%=post.title%></a>
             </div>
             <%
         }
     %>
     </div>
-
-    <div class="post-content" style="float: left">
-
-    </div>
-
-
+    <%- postListPage %>
 
     <div class="create-post">
         <div class="create-post-msg"></div>
         <table>
+            <tr>
+                <td>板块</td>
+                <td>
+                    <select>
+
+                        <option></option>
+
+                    </select>
+                </td>
+            </tr>
             <tr>
                 <td>标题</td>
                 <td><input type="text" name="title"></td>

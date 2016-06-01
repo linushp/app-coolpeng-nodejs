@@ -12,6 +12,7 @@ var  partials = require('express-partials');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var blog = require('./routes/blog');
+var install = require('./routes/install');
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use(partials());
 app.use('/', routes);
 app.use('/users', users);
 app.use('/blog', blog);
+app.use('/install', install);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

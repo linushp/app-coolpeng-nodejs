@@ -1,7 +1,8 @@
 var express = require('express');
 var BlogTopic = require("./models/BlogModels").BlogTopic;
-//var mongoose = require('mongoose');
-//var db = global.mongooseDB;
+var cpUtil = require("./utils/cp-util");
+var toJsPostList = cpUtil.toJsPostList;
+var getLayout = cpUtil.getLayout;
 
 var router = express.Router();
 
@@ -40,12 +41,12 @@ router.get('/', function(req, res, next) {
           postList.push({title:dd.title,id:dd.id})
         }
 
-        res.render('index', {layout:"layout", title: 'Express' + count,postList:postList });
+        res.render('index', {layout:getLayout(req), title: 'Express' + count,postList:postList });
       });
 
     });
   }else {
-    res.render('index', {layout:"layout", title: 'Express' ,postList:postList });
+    res.render('index', {layout:getLayout(req), title: 'Express' ,postList:postList });
   }
 
 

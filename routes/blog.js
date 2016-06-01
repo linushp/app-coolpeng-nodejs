@@ -1,27 +1,13 @@
 var express = require('express');
+var async = require("async");
 var router = express.Router();
 var BlogPost = require("./models/BlogModels").BlogPost;
 var BlogTopic = require("./models/BlogModels").BlogTopic;
+var cpPage = require("./utils/cp-page");
+var cpUtil = require("./utils/cp-util");
+var toJsPostList = cpUtil.toJsPostList;
+var getLayout = cpUtil.getLayout;
 
-
-var toJsPostList = function (doc) {
-    var postList = [];
-    for (var i = 0; i < doc.length; i++) {
-        var obj = doc[i];
-        var id = (obj._id || {}).toString();
-        postList.push({
-            _id: id,
-            id: id,
-            title: obj.title,
-            content: obj.content,
-            createTime: obj.createTime,
-            createUser: obj.createUser,
-            comments: obj.comments
-        });
-    }
-
-    return postList;
-};
 
 /**
  * 首页
@@ -29,10 +15,83 @@ var toJsPostList = function (doc) {
 router.get('/', function (req, res, next) {
 
 
-    BlogPost.find(function (err, doc) {
-        var postList = toJsPostList(doc);
-        res.render('blog/index', {layout: "layout", title: 'Express', postList: postList});
-    });
+    var pn = parseInt(req.query.pn || "1", 10);
+    if (pn < 1) {
+        pn = 1;
+    }
+    var pageNumber = pn;
+    var pageSize = 20;
+
+    var condition = {};
+
+    async.parallel([
+        function(callback){
+            BlogPost.count(condition,callback);
+        },
+        function(callback){
+            BlogPost.find(condition,callback).skip((pageNumber - 1) * pageSize).limit(pageSize);
+        }
+    ],
+        function(err,result){
+
+            var recordCount = result[0];
+            var postList = toJsPostList(result[1] || []);
+
+            var pageCount = parseInt(recordCount / pageSize, 10);
+            pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
+
+            var layPageHTML = cpPage.toPagination({
+                pageNumber: pageNumber,
+                pageCount: pageCount || 1,
+                linkRender: function (num, text, isEnable) {
+                    return '<a class="ajax-link" ajax-target=".main-body" href="/blog/?pn=' + num + '" >' + text + '</a>';
+                }
+            });
+
+            res.render('blog/index', {
+                layout: getLayout(req),
+                title: 'Express',
+                postList: postList,
+                postListPage: layPageHTML
+            });
+
+        }
+    );
+
+
+
+    //BlogPost.count(function (err, doc) {
+    //
+    //    var recordCount = doc;
+    //    var pageNumber = pn;
+    //    var pageSize = 20;
+    //    var pageCount = parseInt(recordCount / pageSize, 10);
+    //    pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
+    //
+    //
+    //    BlogPost.find(function (err, doc) {
+    //
+    //        var postList = toJsPostList(doc);
+    //        var layPageHTML = cpPage.toPagination({
+    //            pageNumber: pageNumber,
+    //            pageCount: pageCount || 1,
+    //            linkRender: function (num, text, isEnable) {
+    //                return '<a class="ajax-link" ajax-target=".main-body" href="/blog/?pn=' + num + '" >' + text + '</a>';
+    //            }
+    //        });
+    //
+    //        res.render('blog/index', {
+    //            layout: getLayout(req),
+    //            title: 'Express',
+    //            postList: postList,
+    //            postListPage: layPageHTML
+    //        });
+    //
+    //    }).skip((pageNumber - 1) * pageSize).limit(pageSize);
+    //});
+
+
+
 });
 
 
@@ -41,21 +100,19 @@ router.get('/', function (req, res, next) {
  */
 router.get('/post/:id', function (req, res, next) {
     var id = req.params.id;
-    var requestType = req.header("X-Requested-With");
-    var layout = (requestType === "XMLHttpRequest" ? false : "layout");
+
 
     BlogPost.find({_id: id}, function (err, doc) {
         if (doc && doc.length > 0) {
             var postList = toJsPostList(doc);
             var post = postList[0];
-            res.render('blog/post', {layout: layout, title: 'Express', post: post});
+            res.render('blog/post', {layout: getLayout(req), title: 'Express', post: post});
         } else {
-            res.render('blog/post', {layout: layout, title: 'Express', post: {title: "没有找到"}});
+            res.render('blog/post', {layout: getLayout(req), title: 'Express', post: {title: "没有找到"}});
         }
     });
 
 });
-
 
 
 /**
@@ -80,11 +137,11 @@ router.post('/post-comment/:id', function (req, res, next) {
 
     var content = req.body.content;
 
-    BlogPost.addComment(id,{title:"",content:content},function(e,r){
-        if (e){
-            res.send("err"+""+ e.toString());
+    BlogPost.addComment(id, {title: "", content: content}, function (e, r) {
+        if (e) {
+            res.send("err" + "" + e.toString());
             res.end();
-        }else {
+        } else {
             res.send("ok");
             res.end();
         }
@@ -108,5 +165,7 @@ router.get('/post-delete/:postId', function (req, res, next) {
 router.get('/post-comment-delete/:postId/:commentId', function (req, res, next) {
 
 });
+
+
 
 module.exports = router;

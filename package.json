@@ -19,7 +19,8 @@
     "mongoose":"*",
     "socket.io":"*",
     "express-partials": "*",
-    "express-session":"*"
-
+    "express-session":"*",
+    "laypage":"*",
+    "async":"1.5.2"
   }
 }

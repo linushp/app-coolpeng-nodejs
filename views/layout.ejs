@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title><%= title %></title>
+
+    <link rel='stylesheet' href='/public/lib/laypage/skin/laypage.css' />
+
     <link rel='stylesheet' href='/public/src/css/style.css'/>
 </head>
 <body>
 
     <div class="mian-header">
         <ul>
-            <li><a href="/">首页</a></li>
-            <li><a href="/blog">博客</a></li>
-            <li><a href="/album">图片</a></li>
-            <li><a href="/favorite">收藏</a></li>
+            <li><a href="/" class="ajax-link" ajax-target=".main-body">首页</a></li>
+            <li><a href="/blog" class="ajax-link" ajax-target=".main-body">博客</a></li>
+            <li><a href="/album" class="ajax-link" ajax-target=".main-body">图片</a></li>
+            <li><a href="/favorite" class="ajax-link" ajax-target=".main-body">收藏</a></li>
         </ul>
     </div>
 
@@ -24,6 +27,8 @@
     </div>
 
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/public/lib/laypage/laypage.js"></script>
+    <script src="/public/src/js/ajax-link.js"></script>
     <script src="/public/src/js/blog-index.js"></script>
 </body>
 </html>

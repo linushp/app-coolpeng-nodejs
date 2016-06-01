@@ -1,5 +1,13 @@
 jQuery(document).ready(function ($) {
 
+    //初始化ajaxLink
+    iniAjaxLink({
+        firstTarget:".main-body"
+    });
+
+
+
+
     //点击新建文章按钮
     $(document).on("click", ".create-post-submit", function () {
         var m = $(".create-post");
@@ -27,66 +35,5 @@ jQuery(document).ready(function ($) {
             $(".create-post-comment-msg").html(d);
         });
     });
-
-
-    //给链接绑定事件
-    if (window.history.pushState && $("#blog-index").length > 0) {
-
-        var ajax, currentState;
-
-        var $postContent = $(".post-content");
-
-        $(document).on("click", ".post-item-link", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            $(".post-list").hide();
-            $(".create-post").hide();
-
-            if (ajax == undefined) {
-                currentState = {
-                    url: document.location.href,
-                    title: document.title,
-                    html: $postContent.html()
-                };
-            }
-
-
-            var $link = $(this);
-            var href = $link.attr("href");
-
-            ajax = $.get(href, function (d) {
-                $postContent.html(d);
-
-                var state = {
-                    url: href,
-                    title: $link.html(),
-                    html: d
-                };
-
-                window.history.pushState(state, null, href);
-            }, "html")
-
-        });
-
-
-        window.addEventListener("popstate", function (event) {
-            if (ajax == null) {
-                return;
-            } else if (event && event.state) {
-                $(".post-list").hide();
-                $(".create-post").hide();
-                document.title = event.state.title;
-                $postContent.html(event.state.html);
-            } else {
-                $(".post-list").show();
-                $(".create-post").show();
-                document.title = currentState.title;
-                $postContent.html(currentState.html);
-            }
-        });
-
-    }
-
 
 });
