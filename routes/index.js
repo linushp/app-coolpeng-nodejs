@@ -41,12 +41,12 @@ router.get('/', function(req, res, next) {
           postList.push({title:dd.title,id:dd.id})
         }
 
-        res.render('index', {layout:getLayout(req), title: 'Express' + count,postList:postList });
+        res.smartRender('index', {layout:getLayout(req), title: 'Express' + count,postList:postList });
       });
 
     });
   }else {
-    res.render('index', {layout:getLayout(req), title: 'Express' ,postList:postList });
+    res.smartRender('index', {layout:getLayout(req), title: 'Express' ,postList:postList });
   }
 
 

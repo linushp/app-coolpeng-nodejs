@@ -2,7 +2,16 @@ jQuery(document).ready(function ($) {
 
     //初始化ajaxLink
     iniAjaxLink({
-        firstTarget:".main-body"
+        firstTarget:".main-body",
+        getTemplateName:function(href){
+            if(href.indexOf("/blog/post/")>=0){
+                return "blog/post";
+            }
+            if(href.indexOf("/blog")>=0){
+                return "blog/index";
+            }
+            return null;
+        }
     });
 
 

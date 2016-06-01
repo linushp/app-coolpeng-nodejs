@@ -15,16 +15,18 @@ var getLayout = cpUtil.getLayout;
 router.get('/', function (req, res, next) {
 
 
-    var pn = parseInt(req.query.pn || "1", 10);
-    if (pn < 1) {
-        pn = 1;
+    var pageNumber = parseInt(req.query.pn || "1", 10);
+    if (pageNumber < 1) {
+        pageNumber = 1;
     }
-    var pageNumber = pn;
     var pageSize = 20;
 
     var condition = {};
 
     async.parallel([
+        function(callback){
+            BlogTopic.find(callback);
+        },
         function(callback){
             BlogPost.count(condition,callback);
         },
@@ -33,9 +35,9 @@ router.get('/', function (req, res, next) {
         }
     ],
         function(err,result){
-
-            var recordCount = result[0];
-            var postList = toJsPostList(result[1] || []);
+            var topicList = result[0];
+            var recordCount = result[1];
+            var postList = toJsPostList(result[2] || []);
 
             var pageCount = parseInt(recordCount / pageSize, 10);
             pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
@@ -48,49 +50,16 @@ router.get('/', function (req, res, next) {
                 }
             });
 
-            res.render('blog/index', {
+            res.smartRender('blog/index', {
                 layout: getLayout(req),
                 title: 'Express',
+                topicList:topicList,
                 postList: postList,
                 postListPage: layPageHTML
             });
 
         }
     );
-
-
-
-    //BlogPost.count(function (err, doc) {
-    //
-    //    var recordCount = doc;
-    //    var pageNumber = pn;
-    //    var pageSize = 20;
-    //    var pageCount = parseInt(recordCount / pageSize, 10);
-    //    pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
-    //
-    //
-    //    BlogPost.find(function (err, doc) {
-    //
-    //        var postList = toJsPostList(doc);
-    //        var layPageHTML = cpPage.toPagination({
-    //            pageNumber: pageNumber,
-    //            pageCount: pageCount || 1,
-    //            linkRender: function (num, text, isEnable) {
-    //                return '<a class="ajax-link" ajax-target=".main-body" href="/blog/?pn=' + num + '" >' + text + '</a>';
-    //            }
-    //        });
-    //
-    //        res.render('blog/index', {
-    //            layout: getLayout(req),
-    //            title: 'Express',
-    //            postList: postList,
-    //            postListPage: layPageHTML
-    //        });
-    //
-    //    }).skip((pageNumber - 1) * pageSize).limit(pageSize);
-    //});
-
-
 
 });
 
@@ -106,9 +75,9 @@ router.get('/post/:id', function (req, res, next) {
         if (doc && doc.length > 0) {
             var postList = toJsPostList(doc);
             var post = postList[0];
-            res.render('blog/post', {layout: getLayout(req), title: 'Express', post: post});
+            res.smartRender('blog/post', {layout: getLayout(req), title: 'Express', post: post});
         } else {
-            res.render('blog/post', {layout: getLayout(req), title: 'Express', post: {title: "没有找到"}});
+            res.smartRender('blog/post', {layout: getLayout(req), title: 'Express', post: {title: "没有找到"}});
         }
     });
 

@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var  partials = require('express-partials');
-
+var cpUtil = require('./routes/utils/cp-util');
 
 
 var routes = require('./routes/index');
@@ -30,6 +30,7 @@ app.use(cookieParser());
 app.use("/public",express.static(path.join(__dirname, 'public')));
 app.use("/bower_components",express.static(path.join(__dirname, 'bower_components')));
 app.use(partials());
+app.use(cpUtil.smartRender());
 
 app.use('/', routes);
 app.use('/users', users);
