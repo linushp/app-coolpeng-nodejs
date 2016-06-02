@@ -23,6 +23,7 @@
     "laypage":"*",
     "async":"1.5.2",
     "underscore":"*",
+    "jquery":"*",
 
     "gulp": "^3.9.1",
     "gulp-concat": "~2.5.2",

@@ -47,6 +47,10 @@
                     </div>
                 </div>
                 <div class="search-box">
+                    <div class="search-box-login">
+                        <% if(!loginUser.isLogin) {%> <i class="icon-user cp-sys-login" title="登录" style="font-size: 16px"></i> <%}%>
+                        <% if(loginUser.isLogin) {%> <i class="icon-user cp-sys-logout" title="退出" style="font-size: 16px"></i> <%}%>
+                    </div>
                     <form action="/search">
                         <input class="form-search" type="text" name="s" placeholder="Search...">
                         <button><i class="icon-search"></i></button>

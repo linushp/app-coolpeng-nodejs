@@ -3,6 +3,31 @@ var fs=require("fs");
 var path = require('path');
 var appConfig = require('../../app-config');
 
+
+function dataFormat(date,fmt){
+
+    if(!date){
+        date = new Date();
+    }
+    if (!fmt){
+        fmt = "yyyy-MM-dd hh:mm:ss";
+    }
+
+    var o = {
+        "M+": date.getMonth() + 1, //月份
+        "d+": date.getDate(), //日
+        "h+": date.getHours(), //小时
+        "m+": date.getMinutes(), //分
+        "s+": date.getSeconds(), //秒
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+        "S": date.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+
 function isArray(obj) {
     return Object.prototype.toString.call(obj) === "[object Array]";
 }
@@ -71,6 +96,15 @@ function parseTemplateName(names){
     }
 }
 
+function getLoginUserFromSession (req, res) {
+    var loginUser = req.session.loginUser;
+    return _.extend({
+        nickname:"luanhaipeng",
+        isLogin:false,
+        role:"guest"//admin,user
+    },loginUser);
+}
+
 var templateCache = {};
 
 var createSmartRender = function(req, res, next){
@@ -124,9 +158,6 @@ var createSmartRender = function(req, res, next){
             }
             else {
                 res.send({
-                    loginUser:{
-                        nickname:"luanhaipeng"
-                    },
                     templateName:ajaxTemplate,
                     template:null,
                     data:data
@@ -140,10 +171,7 @@ var createSmartRender = function(req, res, next){
             //服务端渲染
 
             var d =  _.extend({
-                loginUser:{
-                    isLogin:true,
-                    nickname:"luanhaipeng"
-                },
+                loginUser:getLoginUserFromSession(req,res),
                 title:"coolpeng",
                 _ENVIRONMENT:appConfig._ENVIRONMENT,
                 layout: getLayout(req)
@@ -168,3 +196,4 @@ function smartParseAndRender(){
 
 exports.toJsPostList = toJsPostList;
 exports.smartParseAndRender = smartParseAndRender;
+exports.dataFormat = dataFormat;

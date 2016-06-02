@@ -9,6 +9,12 @@ var INDEX_STRING = {
     type: String,
     index: true
 };
+
+
+
+
+
+
 /**
  * 话题
  */
@@ -22,6 +28,56 @@ var BlogTopic = dbUtil.db.model('topic', BlogTopicSchema);
 
 
 
+
+
+/**
+ * 用户
+ */
+var UserSchema = new Schema({
+    nickname:String,
+    email: String,
+    loginCount:Number,
+    avatar:String,
+    loginTimes:[String]
+}); //  定义了一个新的模型，但是此模式还未和users集合有关联
+
+
+var UserModel = dbUtil.db.model('user', UserSchema); //  与users集合关联
+
+
+
+
+
+
+
+
+/**
+ * 标签
+ */
+var TagSchema = new Schema({
+    title:String,
+    postCount:Number
+}); //  定义了一个新的模型，但是此模式还未和users集合有关联
+
+
+var TagModel = dbUtil.db.model('tag', TagSchema); //  与users集合关联
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * 评论
  */
@@ -31,7 +87,11 @@ Comment.add({
     title: INDEX_STRING,
     date: Date,
     content: String,
-    comments: [Comment]
+    comments: [Comment],
+    createTime: String,
+    createUserNickName: String,
+    createUserAvatar:String,
+    floorNumber:Number
 });
 
 
@@ -42,10 +102,15 @@ var BlogPostSchema = new Schema({
     id: INDEX_STRING,
     topicId:INDEX_STRING,
     title: String,
-    createTime: String,
-    createUser: String,
     content: String,
     comments: [Comment],
+    createTime: String,
+    createUserNickName: String,
+    createUserAvatar:String,
+    viewCount:Number,
+    replyCount:Number,
+    tags:[String],
+    belongTopicId:String,
     creator: Schema.ObjectId
 }); //  定义了一个新的模型，但是此模式还未和users集合有关联
 
@@ -57,9 +122,8 @@ BlogPostSchema.statics.findByTitle = function (title, callback) {
 var BlogPost = dbUtil.db.model('post', BlogPostSchema); //  与users集合关联
 
 BlogPost.addComment = function (blogId, data, callback) {
-    //data = new Comment(data);
     BlogPost.update({_id: blogId}, {"$push": {"comments": data}}, callback);
-};
+}
 
 
 BlogPost.getBlogPostCount = function(condition){
@@ -93,3 +157,5 @@ BlogPost.addOneComment = function (blogId, data) {
 
 exports.BlogPost = BlogPost;
 exports.BlogTopic = BlogTopic;
+exports.UserModel = UserModel;
+exports.TagModel = TagModel;

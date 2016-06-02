@@ -1,0 +1,31 @@
+<div id="respond" class="respond-box box-shadow">
+    <h3 class="comments-title">发表评论</h3>
+
+    <div style='display:<%=(loginUser.isLogin?"none":"block")%>'>
+        <p class="tips">您必须 <span class="cp-sys-login">  [ 登录 ] </span>才能发表留言！</p>
+    </div>
+
+    <div style='display:<%=(loginUser.isLogin?"block":"none")%>'>
+        <form id="commentform" class="create-post-comment" data-id="<%=post.id%>" onsubmit="return false;">
+            <div class="clearfix comment-from-main">
+                <div class="logged-in-as">你好，<%=loginUser.nickname%> ！
+                    <span class="cp-sys-logout link" title="退出">退出</span></div>
+            </div>
+
+            <div class="clearfix comment-from-main">
+                <div class="comment-form-textarea">
+                    <div class="comment-textarea-box">
+                        <textarea class="comment-textarea" name="content" placeholder="说点什么吧..."></textarea><div id="comment_message" style="display:none;"></div>
+                    </div>
+                </div>
+                <div class="form-submit">
+                    <input class="btn-comment create-post-comment-submit" name="submit" type="submit" id="submit" tabindex="5" title="发表评论" value="发表评论">
+                    <input type="hidden" name="comment_post_ID" value="<%=post.id%>" id="comment_post_ID">
+                    <input type="hidden" name="comment_parent" id="comment_parent" value="0">
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>

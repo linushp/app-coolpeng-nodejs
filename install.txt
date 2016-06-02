@@ -9,3 +9,7 @@
 6、我要抄的模板
     http://grace.wpbyg.com/
     http://www.wpmee.com/blogtheme/
+
+7、设置生产环境：
+    set NODE_ENV=production
+    生产环境下，模板默认有缓存。

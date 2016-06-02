@@ -101,18 +101,53 @@ router.post('/post', function (req, res, next) {
  */
 router.post('/post-comment/:id', function (req, res, next) {
     var id = req.params.id;
-
+    var loginUser = req.session.loginUser || {};
     var content = req.body.content;
 
-    BlogPost.addComment(id, {title: "", content: content}, function (e, r) {
-        if (e) {
-            res.send("err" + "" + e.toString());
-            res.end();
-        } else {
-            res.send("ok");
-            res.end();
+    BlogPost.find({_id:id},function(err,doc){
+
+        if(err || !doc || doc.length===0){
+            res.end("没有找到此文章，可能已经被删除了。");
+            return;
         }
+
+        var post = doc[0];
+        var replyCount  = post.replyCount || 0;
+        replyCount++;
+
+
+        BlogPost.update({_id:id},{"$set":{replyCount:replyCount}},function(err,d){
+
+            if(err){
+                res.end("更新帖子数据失败");
+                return;
+            }
+
+            BlogPost.addComment(id, {
+                title: "",
+                content: content,
+                date:new Date(),
+                createTime:cpUtil.dataFormat(),
+                createUserNickName:loginUser.nickname,
+                createUserAvatar:loginUser.avatar,
+                floorNumber:replyCount
+            }, function (err, r) {
+                if (err) {
+                    res.send(err.toString());
+                    res.end();
+                } else {
+                    res.send("ok");
+                    res.end();
+                }
+            });
+
+        });
+
+
+
+
     });
+
 
 
 });
