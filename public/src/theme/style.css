@@ -945,3 +945,5 @@ nav .navbar-form{margin-top:0;margin-bottom:0;border:none;box-shadow:none}
 }@media screen and (min-width:480px)and (max-width:767px){.posts-img{max-height:160px}
 }@media screen and (max-width:480px){.posts-cjtz-min,.content-cjtz-mini{display:block}
 }
+
+span.link{cursor: pointer;}

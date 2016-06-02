@@ -73,9 +73,9 @@ router.get('/post/:id', function (req, res, next) {
         if (doc && doc.length > 0) {
             var postList = toJsPostList(doc,false);
             var post = postList[0];
-            res.smartRender('blog/post', {title: 'Express', post: post});
+            res.smartRender(['blog/post',"blog/post-content"], {title: 'Express', post: post});
         } else {
-            res.smartRender('blog/post', {title: 'Express', post: {title: "没有找到"}});
+            res.smartRender(['blog/post',"blog/post-content"], {title: 'Express', post: {title: "没有找到"}});
         }
     });
 

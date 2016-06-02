@@ -1,0 +1,111 @@
+<div class="info-i box-shadow">
+    <div id="comments" class="clearfix">
+
+        <div class="comments-box box-shadow">
+            <h3 class="comments-title">全部评论：<span class="comments-num">134条</span></h3>
+            <div id="loading-comments"><span><i class="fa fa-spinner fa-spin"></i> 加载中...</span></div>
+            <ol class="commentlist">
+
+                <%
+                var comments = post.comments||[];
+                for(var i = 0;i < comments.length;i++){
+                var comment = comments[i];
+                %>
+
+                <li class="comment byuser comment-author-stryc even thread-even depth-1" id="li-comment-3140">
+                    <div id="comment-3140">
+
+                        <div class="comment-avatar">
+                            <img
+                                src="https://secure.gravatar.com/avatar/9f544fe319f8315b2ab6ee587a22106a"
+                                class="avatar avatar-100" height="100" width="100"></div>
+                        <div class="comment-body">
+                            <div class="comment_author">
+                                <span class="name"><a class="url" href="/i?a=" rel="external nofollow" target="_blank">stryc</a></span>
+                                <em>2016-05-06 15:10</em>
+                                <div class="comment_floor">70楼</div>
+                            </div>
+                            <div class="comment-text">
+                                <%=comment.content%>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="children">
+
+                        <li class="comment byuser comment-author-suxing bypostauthor odd alt depth-2"
+                            id="li-comment-3142">
+                            <div id="comment-3142">
+
+                                <div class="comment-avatar"><img
+                                        src="https://secure.gravatar.com/avatar/afa39accf8700cbbe7b13e1d01aa5b17"
+                                        class="avatar avatar-100" height="100" width="100"></div>
+                                <div class="comment-body">
+                                    <div class="comment_author">
+                                        <span class="name"><a class="url" href="/i?a=aHR0cDovL3d3dy5zdXhpbmcubWU="
+                                                              rel="external nofollow" target="_blank">苏醒</a></span>
+                                        <span class="comment_admin">站长</span> <em>2016-05-07 08:19</em>
+                                        <div class="comment_floor"></div>
+                                    </div>
+                                    <div class="comment-text">
+                                        <p>Grace主题支持预设默认头像。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul><!-- .children -->
+                </li>
+
+
+                <%}%>
+
+            </ol>
+
+
+            <div id="comments-navi">
+                <a class="prev page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-8#comments"><i
+                        class="fa fa-angle-left"></i>
+                </a>
+                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-1#comments">1</a>
+                <span class="page-numbers dots">…</span>
+                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-7#comments">7</a>
+                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-8#comments">8</a>
+                <span class="page-numbers current">9</span>
+            </div>
+
+
+        </div>
+
+        <div id="respond" class="respond-box box-shadow">
+            <h3 class="comments-title">发表评论</h3>
+
+            <div style='display:<%=(loginUser.isLogin?"none":"block")%>'>
+                <p class="tips">您必须 <span class="cp-comment-login">  [ 登录 ] </span>才能发表留言！</p>
+            </div>
+
+            <div style='display:<%=(loginUser.isLogin?"block":"none")%>'>
+                <form id="commentform" class="create-post-comment" data-id="<%=post.id%>" onsubmit="return false;">
+                    <div class="clearfix comment-from-main">
+                        <div class="logged-in-as">你好，<%=loginUser.nickname%> ！
+                        <span class="cp-sys-logout link" title="退出">退出</span></div>
+                    </div>
+
+                    <div class="clearfix comment-from-main">
+                        <div class="comment-form-textarea">
+                            <div class="comment-textarea-box">
+                                <textarea class="comment-textarea" name="content" placeholder="说点什么吧..."></textarea><div id="comment_message" style="display:none;"></div>
+                            </div>
+                        </div>
+                        <div class="form-submit">
+                            <input class="btn-comment create-post-comment-submit" name="submit" type="submit" id="submit" tabindex="5" title="发表评论" value="发表评论">
+                            <input type="hidden" name="comment_post_ID" value="<%=post.id%>" id="comment_post_ID">
+                            <input type="hidden" name="comment_parent" id="comment_parent" value="0">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>

@@ -1,38 +1,13 @@
-<div class="post-detail">
-    <h1><%=post.title%></h1>
-    <div class="post-detail-content">
-        <%=post.content%>
-    </div>
+<div>
+    <div class="posts">
 
-    <div class="post-detail-comments">
+        <div class="posts-box" id="blog-post-box">
+            <% include post-content %>
+        </div>
 
-        <%
-            var comments = post.comments||[];
-            for(var i = 0;i < comments.length;i++){
-                var comment = comments[i];
-                %>
-                    <p><%=comment.content%></p>
-                <%
-            }
-        %>
+        <div class="sidebar sidebar-right">
+            <% include sidebar %>
+        </div>
 
-    </div>
-
-    <div class="create-post-comment" data-id="<%=post.id%>">
-        <div class="create-post-comment-msg"></div>
-        <table>
-            <tr>
-                <td>回复</td>
-                <td>
-                    <textarea name="content" cols="30" rows="10"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <button class="create-post-comment-submit">回复</button>
-                </td>
-            </tr>
-        </table>
     </div>
 </div>

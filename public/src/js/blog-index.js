@@ -5,7 +5,7 @@ jQuery(document).ready(function ($) {
         firstTarget:".main-body",
         getTemplateName:function(href){
             if(href.indexOf("/blog/post/")>=0){
-                return "blog/post";
+                return "blog/post-content";
             }
             if(href.indexOf("/blog")>=0){
                 return "blog/index";
@@ -44,5 +44,36 @@ jQuery(document).ready(function ($) {
             $(".create-post-comment-msg").html(d);
         });
     });
+
+
+
+
+    //点击用户退出按钮
+    $(document).on("click", ".cp-sys-logout", function () {
+        $.get("/user/logout", function (d) {
+            layer.alert("退出成功",function(){
+                window.location.reload();
+            });
+        });
+    });
+
+
+
+    //评论页面点击用户登录按钮
+    $(document).on("click", ".cp-comment-login", function () {
+        $.get("/user/logout", function (d) {
+            layer.alert("登录成功",function(){
+                window.location.reload();
+            });
+        });
+    });
+
+
+
+
+
+
+
+
 
 });

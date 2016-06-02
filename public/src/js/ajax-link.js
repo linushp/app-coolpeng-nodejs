@@ -17,6 +17,11 @@
 
                 var $this = $(this);
                 var ajaxTarget = $this.attr("ajax-target");
+
+                //标记位，是否启用服务端渲染
+                var ajaxRender = $this.attr("ajax-render") ||"";
+                var isAjaxSSR = (ajaxRender ==="server");
+
                 if (!ajaxTarget || ajaxTarget.length === 0) {
                     return;
                 }
@@ -62,20 +67,25 @@
 
                  ajaxHandler = $.ajax({
                     url:href,
-                    dataType: "json",
+                    dataType: (isAjaxSSR?"html":"json"),
                     type:"get",
                     timeout : 10000,
                     success: function (mm) {
-                        var templateName = mm.templateName;
-                        var template = mm.template;
-                        if(template){
-                            templateCache[templateName] = template;
-                        }else {
-                            template = templateCache[templateName];
+                        if(isAjaxSSR){
+                            ajaxHtmlSuccess(mm);
                         }
-                        var data = mm.data ||{};
-                        var html = ejs.render(template, data);
-                        ajaxHtmlSuccess(html,data);
+                        else {
+                            var templateName = mm.templateName;
+                            var template = mm.template;
+                            if(template){
+                                templateCache[templateName] = template;
+                            }else {
+                                template = templateCache[templateName];
+                            }
+                            var data = mm.data ||{};
+                            var html = ejs.render(template, data);
+                            ajaxHtmlSuccess(html,data);
+                        }
                     },
                     complete : function(XMLHttpRequest,status){
                         if(status=='timeout'){
@@ -93,14 +103,9 @@
                         }else{
                             XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "true");
                         }
+                        XMLHttpRequest.setRequestHeader("CP_TEMPLATE_RENDER", ajaxRender);
                     }
                 });
-
-
-
-                //ajaxHandler = $.get(href, function (html) {
-                //    ajaxHtmlSuccess(html);
-                //}, "html");
 
             });
 

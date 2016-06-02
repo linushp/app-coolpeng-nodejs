@@ -3,6 +3,10 @@ var fs=require("fs");
 var path = require('path');
 var appConfig = require('../../app-config');
 
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === "[object Array]";
+}
+
 function getLayout(req){
    return isXHR(req) ? false : "layout";
 }
@@ -47,28 +51,51 @@ function isNeedTemplate(req){
 }
 
 
+function isAjaxServerRender(req){
+    var CP_TEMPLATE_RENDER = req.header("CP_TEMPLATE_RENDER");
+    return CP_TEMPLATE_RENDER==="server";
+}
+
+function parseTemplateName(names){
+    if(isArray(names)){
+        return {
+            renderTemplate:names[0],
+            ajaxTemplate:names[1]
+        };
+    }else {
+        return {
+            renderTemplate:names,
+            ajaxTemplate:names
+        };
+
+    }
+}
 
 var templateCache = {};
 
 var createSmartRender = function(req, res, next){
     return function (templateName,data){
 
-        if(isXHR(req)){
+        var names = parseTemplateName(templateName);
+        var renderTemplate = names.renderTemplate;
+        var ajaxTemplate = names.ajaxTemplate;
+
+        if(isXHR(req) && !isAjaxServerRender(req)){
 
             if(isNeedTemplate(req)){
 
-                //var template = templateCache[templateName];
-                var template = null;
+                var template = templateCache[templateName];
+
                 if(template){
                     res.send({
-                        templateName:templateName,
+                        templateName:ajaxTemplate,
                         template:template,
                         data:data
                     });
                     res.end();
                 }else {
                     var viewsPath = path.join(__dirname, '../../views');
-                    var filePath = path.join(viewsPath,templateName);
+                    var filePath = path.join(viewsPath,ajaxTemplate);
                     if(!/.ejs$/.test(filePath)){
                         filePath += ".ejs";
                     }
@@ -80,9 +107,13 @@ var createSmartRender = function(req, res, next){
 
                         file = file.replace(/\s+|(\r\n)/g," ");
 
-                        templateCache[templateName] = file;
+                        //开发环境没有缓存
+                        if(appConfig._ENVIRONMENT!=="development"){
+                            templateCache[ajaxTemplate] = file;
+                        }
+
                         res.send({
-                            templateName:templateName,
+                            templateName:ajaxTemplate,
                             template:file,
                             data:data
                         });
@@ -93,7 +124,10 @@ var createSmartRender = function(req, res, next){
             }
             else {
                 res.send({
-                    templateName:templateName,
+                    loginUser:{
+                        nickname:"luanhaipeng"
+                    },
+                    templateName:ajaxTemplate,
                     template:null,
                     data:data
                 });
@@ -101,11 +135,20 @@ var createSmartRender = function(req, res, next){
             }
 
         }else {
+
+            //如果不是ajax请求，获取前台要求服务端渲染的话
+            //服务端渲染
+
             var d =  _.extend({
+                loginUser:{
+                    isLogin:true,
+                    nickname:"luanhaipeng"
+                },
+                title:"coolpeng",
                 _ENVIRONMENT:appConfig._ENVIRONMENT,
                 layout: getLayout(req)
             },data);
-            res.render(templateName,d);
+            res.render(renderTemplate,d);
         }
     }
 };
