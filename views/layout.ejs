@@ -63,7 +63,23 @@
 
 
 
+
+
         <div id="page-content" >
+
+
+            <% if(loginUser.isLogin) {%>
+                <div class="container" >
+                    <div class="admin-operation">
+                        <ul>
+                            <li><a href="/blog/post-create" target="_self">发表文章</a></li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            <%}%>
+
+
             <div class="container main-body" >
                 <%- body %>
             </div>

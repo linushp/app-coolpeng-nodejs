@@ -16,7 +16,6 @@
   ],
   "dependencies": {
     "jquery": "*",
-    "ejs":"*",
-    "ueditor":"*"
+    "ejs":"*"
   }
 }

@@ -6,15 +6,18 @@
                 <h2><a><%=post.title%></a></h2>
             </div>
             <div class="post-content">
-                <%=post.content%>
-                sdbfjkhsdjhf
+                <%-post.content%>
             </div>
             <div class="post-entry-categories">
-                <a href="/tags/xxx" rel="tag">中国</a>
-                <a href="/tags/xxx" rel="tag">中央</a>
-                <a href="/tags/xxx" rel="tag">巡视</a>
-                <a href="/tags/xxx" rel="tag">金融</a>
-                <a href="/tags/xxx" rel="tag">金融机构</a>
+                <%
+                    var tags = post.tags || [];
+                    for(var i=0;i< tags.length;i++){
+                        var tag = tags[i];
+                %>
+                    <a href="/search/tag/<%=tag%>" rel="tag"><%=tag%></a>
+                <%
+                    }
+                %>
             </div>
         </div>
     </div>

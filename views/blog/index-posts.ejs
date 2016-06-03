@@ -7,11 +7,9 @@ var post = postList[i];
         <div class="posts-default-content">
             <div class="posts-default-title">
                 <div class="post-entry-categories">
-                    <a href="/tags/xxx" rel="tag">中国</a>
-                    <a href="/tags/xxx" rel="tag">中央</a>
-                    <a href="/tags/xxx" rel="tag">巡视</a>
-                    <a href="/tags/xxx" rel="tag">金融</a>
-                    <a href="/tags/xxx" rel="tag">金融机构</a>
+                    <% var tags = post.tags || []; tags.forEach(function(tag){%>
+                    <a href="/search/tag/<%=tag%>" rel="tag"><%=tag%></a>
+                    <% }); %>
                 </div>
                 <h2>
                     <a class="ajax-link" ajax-target=".main-body" ajax-render="server" href="/blog/post/<%=post.id%>" title="<%=post.title%>">
@@ -20,7 +18,7 @@ var post = postList[i];
                 </h2>
             </div>
             <div class="posts-text">
-                虎嗅注：上周五（10月23日）国信证券总裁陈鸿桥在家中自杀身亡，中信证券下属直投机构金石投资总经理祁曙光被公安机关带走。一天之内金融机构连折两位高管。同日，传出2015年中央第三...
+                <%=post.contentSummary%>
             </div>
             <div class="posts-default-info">
                 <ul>

@@ -32,24 +32,43 @@ jQuery(document).ready(function ($) {
     });
 
 
+    function onClick(selector,callback){
+        $(document).on("click",selector,callback);
+    }
 
 
-    //点击新建文章按钮
-    $(document).on("click", ".create-post-submit", function () {
-        var m = $(".create-post");
-        var post = {
-            title: m.find("input[name=title]").val(),
-            content: m.find("[name=content]").val()
-        };
-        $(".create-post-msg").html("loading....");
-        $.post("/blog/post", post, function (d) {
-            $(".create-post-msg").html(d);
-        });
+    /**
+     * 新建帖子按钮
+     */
+    onClick(".create-post-submit",function(){
+
+        var editor = UE.getEditor("create-ueditor");
+        var content = editor.getContent();
+        var contentSummary = editor.getContentTxt();
+        if(contentSummary.length>400){
+            contentSummary = contentSummary.slice(0,400);
+        }
+        var $box = $("#create-post-box");
+        var title = $box.find("input[name=title]").val();
+        var belongTopicId = $box.find("select[name=belongTopicId]").val();
+        var tagString = $box.find("input[name=tagString]").val();
+
+        $.post("/blog/post-create",{
+            title:title,
+            content:content,
+            contentSummary:contentSummary,
+            tagString:tagString,
+            belongTopicId:belongTopicId
+        },function(res){
+            if(res==="ok"){
+                layer.msg("新建成功")
+            }
+        },"text");
+
     });
 
-
     //点击文章的回复按钮
-    $(document).on("click", ".create-post-comment-submit", function () {
+    onClick( ".create-post-comment-submit", function () {
         var m = $(".create-post-comment");
         var id = m.data("id");
         var comment = {
@@ -66,7 +85,7 @@ jQuery(document).ready(function ($) {
 
 
     //点击用户退出按钮
-    $(document).on("click", ".cp-sys-logout", function () {
+    onClick( ".cp-sys-logout", function () {
         $.get("/users/logout", function (d) {
             layer.alert("退出成功",function(){
                 window.location.reload();
@@ -77,7 +96,7 @@ jQuery(document).ready(function ($) {
 
 
     //评论页面点击用户登录按钮
-    $(document).on("click", ".cp-sys-login", function () {
+    onClick( ".cp-sys-login", function () {
 
         //iframe窗
         layer.open({

@@ -50,7 +50,9 @@ var toJsPostList = function (doc,isSummary) {
         if(isSummary){
             postList.push({
                 id: id,
-                title: obj.title
+                title: obj.title,
+                contentSummary:obj.contentSummary,
+                tags:obj.tags
             });
         }else {
             postList.push({
@@ -59,7 +61,8 @@ var toJsPostList = function (doc,isSummary) {
                 content: obj.content,
                 createTime: obj.createTime,
                 createUser: obj.createUser,
-                comments: obj.comments
+                comments: obj.comments,
+                tags:obj.tags
             });
         }
 
@@ -101,6 +104,7 @@ function getLoginUserFromSession (req, res) {
     return _.extend({
         nickname:"luanhaipeng",
         isLogin:false,
+        avatar:"",
         role:"guest"//admin,user
     },loginUser);
 }
@@ -194,6 +198,18 @@ function smartParseAndRender(){
 }
 
 
+
+
+function isPermissionCreatePost(req){
+    var loginUser = req.session.loginUser;
+    if(!loginUser || !loginUser.isLogin || (loginUser.role!=="admin")){
+        return false;
+    }
+    return true;
+}
+
+
 exports.toJsPostList = toJsPostList;
 exports.smartParseAndRender = smartParseAndRender;
 exports.dataFormat = dataFormat;
+exports.isPermissionCreatePost = isPermissionCreatePost;

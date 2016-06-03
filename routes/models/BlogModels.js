@@ -103,10 +103,19 @@ var BlogPostSchema = new Schema({
     topicId:INDEX_STRING,
     title: String,
     content: String,
+    contentSummary: String,
+
     comments: [Comment],
     createTime: String,
+    createDate: Date,
     createUserNickName: String,
     createUserAvatar:String,
+
+    updateTime: String,
+    updateDate: Date,
+    updateUserNickName: String,
+    updateUserAvatar:String,
+
     viewCount:Number,
     replyCount:Number,
     tags:[String],

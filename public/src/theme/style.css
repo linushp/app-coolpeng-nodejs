@@ -506,7 +506,7 @@ to{transform:rotate(360deg)}
 #commentform .form-submit{position:relative;z-index:101;}
 #commentform .form-submit .facetoggle{}
 #commentform .form-submit .btn-comment{float:right}
-#commentform .form-submit input[type="submit"]{-webkit-appearance:none;border-radius:2px;background:#19B5FE;color:#fff;padding:14px 0;border:0;font-size:16px;font-weight:400;width:120px;line-height:1;height:auto;letter-spacing:0.1em;text-transform:uppercase;text-shadow:1px 1px 0px rgba(0,0,0,0.11);-webkit-transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;-moz-transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;cursor:pointer}
+#commentform .form-submit input[type="submit"],.submit-button{-webkit-appearance:none;border-radius:2px;background:#19B5FE;color:#fff;padding:14px 0;border:0;font-size:16px;font-weight:400;width:120px;line-height:1;height:auto;letter-spacing:0.1em;text-transform:uppercase;text-shadow:1px 1px 0px rgba(0,0,0,0.11);-webkit-transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;-moz-transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;transition:color .2s ease-out,background .2s ease-out,border-color .2s ease-out;cursor:pointer}
 #commentform .form-submit input[type="submit"]:hover{background:#282828}
 img.wp-smiley{width:22px!important;height:auto!important;max-height:none !important}
 .comment-form-smilies{display:none;width:230px;position:absolute;background:#fff;margin-top:10px;border:1px solid rgba(26,53,71,0.12);border-radius:4px;box-shadow:0 1px 2px rgba(26,53,71,0.1);zoom:1;transition:0.25s cubic-bezier(0.3,0,0,1.3);z-index:8}
@@ -944,3 +944,27 @@ nav .navbar-form{margin-top:0;margin-bottom:0;border:none;box-shadow:none}
 
 span.link{cursor: pointer;}
 .cp-sys-login,.cp-sys-logout{cursor: pointer}
+.admin-operation{
+    background-color: #808080;
+    color: #FFFFFF;
+    border-bottom:3px solid #FFBB50;
+    width: 100%;
+    margin: 10px auto;
+}
+
+.admin-operation ul li{
+    float: left;
+    margin-left: 20px;
+    line-height: 30px;
+}
+.cp-input{
+    display: inline-block;
+    /*width: 400px;*/
+    padding: 5px 14px;
+    border: 1px solid #E4E4E4;
+}
+.cp-select{
+    display: inline-block;
+    height: 35px;
+    width: 200px;
+}

@@ -1,0 +1,46 @@
+<div>
+    <div class="posts">
+
+        <div class="posts-box" id="blog-post-box">
+            <div class="post" id="create-post-box">
+                <div>文章标题: <input type="text" style="width: 400px" name="title" class="cp-input"></div>
+                <div style="height: 10px"></div>
+                <div>文章分类: <select class="cp-select" name="belongTopicId">
+                    <% for (var i=0;i< topicList.length; i++){var topic = topicList[i];%>
+                    <option value="<%=topic.topicId%>"><%=topic.title%></option>
+                    <%}%>
+                    </select>
+                </div>
+                <div style="height: 10px"></div>
+                <script id="create-ueditor" type="text/plain" style="height:400px;"></script>
+                <div style="height: 10px"></div>
+                <div>关键字: <input name="tagString" type="text" style="width: 400px" class="cp-input"></div>
+                <div style="height: 30px"></div>
+                <div>
+                    <button class="submit-button create-post-submit" style="float: right;">发布文章</button>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar sidebar-right">
+            <% include sidebar %>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        window.UEDITOR_HOME_URL = "/public/lib/ueditor/";
+    </script>
+    <script type="text/javascript" charset="utf-8" src="/public/static/create-post/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/public/lib/ueditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="/public/lib/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script>
+        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        UE.getEditor('create-ueditor');
+    </script>
+
+
+</div>
