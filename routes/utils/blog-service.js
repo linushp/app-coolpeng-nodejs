@@ -4,7 +4,7 @@ var BlogPost = models.BlogPost;
 var BlogTopic = models.BlogTopic;
 var UserModel = models.UserModel;
 var TagModel = models.TagModel;
-
+var cpPage = require("./cp-page");
 
 
 function getBlogSidebar(callback0){
@@ -48,4 +48,40 @@ function getBlogSidebar(callback0){
 }
 
 
+
+
+
+function getBlogList(condition,pageNumber,pageSize,callback0){
+    async.parallel([
+            function (callback) {
+                BlogPost.count(condition, callback);
+            },
+            function (callback) {
+                BlogPost.find(condition, callback).sort({ createDate : -1 }).skip((pageNumber - 1) * pageSize).limit(pageSize);
+            }
+        ],
+        function (err, result) {
+            var recordCount = result[0];
+            var postList = result[1] || []; //服务端渲染，不需要
+            var pageCount = parseInt(recordCount / pageSize, 10);
+            pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
+
+            var layPageHTML = cpPage.toPagination({
+                pageNumber: pageNumber,
+                pageCount: pageCount || 1,
+                linkRender: function (num, text, isEnable) {
+                    return '<a class="ajax-link" ajax-target=".main-body" href="/blog/?pn=' + num + '" >' + text + '</a>';
+                }
+            });
+
+            callback0({
+                postList: postList,
+                postListPage: layPageHTML
+            });
+        }
+    );
+}
+
+
 exports.getBlogSidebar = getBlogSidebar;
+exports.getBlogList = getBlogList;

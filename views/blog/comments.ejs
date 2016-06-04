@@ -17,7 +17,7 @@
 
                         <div class="comment-avatar">
                             <img
-                                src="https://secure.gravatar.com/avatar/9f544fe319f8315b2ab6ee587a22106a"
+                                src="<%=comment.createUserAvatar%>"
                                 class="avatar avatar-100" height="100" width="100"></div>
                         <div class="comment-body">
                             <div class="comment_author">
@@ -33,27 +33,41 @@
 
                     <ul class="children">
 
+                        <%var subComments = comment.comments||[];%>
+                        <%subComments.forEach(function(subComment,i){%>
+
                         <li class="comment byuser comment-author-suxing bypostauthor odd alt depth-2"
                             id="li-comment-3142">
                             <div id="comment-3142">
 
                                 <div class="comment-avatar"><img
-                                        src="https://secure.gravatar.com/avatar/afa39accf8700cbbe7b13e1d01aa5b17"
+                                        src="<%=subComment.createUserAvatar%>"
                                         class="avatar avatar-100" height="100" width="100"></div>
                                 <div class="comment-body">
                                     <div class="comment_author">
-                                        <span class="name"><a class="url" href="/i?a=aHR0cDovL3d3dy5zdXhpbmcubWU="
-                                                              rel="external nofollow" target="_blank">苏醒</a></span>
-                                        <span class="comment_admin">站长</span> <em>2016-05-07 08:19</em>
+                                        <span class="name">
+                                            <a class="url" href="/" rel="external nofollow" target="_blank">
+                                                <%=subComment.createUserNickName%>
+                                            </a>
+                                        </span>
+
+                                        <%if(subComment.createUserRole==="admin"){ %>
+                                            <span class="comment_admin">站长</span>
+                                        <%}%>
+
+                                        <em> <%=subComment.createTime%></em>
                                         <div class="comment_floor"></div>
                                     </div>
                                     <div class="comment-text">
-                                        <p>Grace主题支持预设默认头像。</p>
+                                        <p><%=subComment.content%></p>
                                     </div>
                                 </div>
                             </div>
                         </li>
-                    </ul><!-- .children -->
+
+                        <%});%>
+
+                    </ul>
                 </li>
 
 
@@ -72,6 +86,7 @@
                 <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-8#comments">8</a>
                 <span class="page-numbers current">9</span>
             </div>
+
             <% include comment-create %>
 
 

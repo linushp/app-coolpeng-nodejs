@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
         var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
         var tagString = $box.find("input[name=tagString]").val();
 
-        $.post("/blog/post-create",{
+        $.post("/article/create",{
             title:title,
             content:content,
             contentSummary:contentSummary,
@@ -78,25 +78,29 @@ jQuery(document).ready(function ($) {
             content: m.find("[name=content]").val()
         };
         $(".create-post-comment-msg").html("loading....");
-        $.post("/blog/post-comment/" + id, comment, function (d) {
+        $.post("/article/comment/create/" + id, comment, function (d) {
             $(".create-post-comment-msg").html(d);
         });
     });
 
 
 
-
-    $(document).on('submit','form.sidebar-search',function(e){
+    var doArticleSearch = function(e,$form){
         e.preventDefault();
         e.stopPropagation();
 
-        var $this = $(this);
-
-        var keyword = $this.find("input[type=text]").val();
+        var keyword = $form.find("input[type=text]").val();
         keyword = encodeURIComponent(keyword);
         var href="/articles/search/" + keyword;
         //ajaxTarget,href,ajaxRender,$eventSource
-        ajaxGoTo(".main-body",href,"server",$this);
+        ajaxGoTo(".main-body",href,"server",$form);
+
+        return false;
+    };
+
+    $(document).on('submit','form.sidebar-search',function(e){
+        var $this = $(this);
+        doArticleSearch(e,$this);
         return false;
     });
 

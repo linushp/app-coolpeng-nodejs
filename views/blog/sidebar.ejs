@@ -24,14 +24,14 @@
                 <% var post = newPostList[0] ||{}; %>
                 <li class="one">
                     <div class="recent-posts-one-img">
-                        <a href="/blog/post/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server" title="<%=post.title%>">
+                        <a href="/article/view/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server" title="<%=post.title%>">
                             <img class="lazy thumbnail"
                                  src="/public/static/images/timthumb0.jpg"
                                  alt="<%=post.title%>" style="display: inline-block;">
                         </a></div>
                     <div class="recent-posts-title">
                         <span class="info"><i class="icon-calendar-1"></i> <%=post.createTime%></span>
-                        <h4 class="title"><a href="/blog/post/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server"
+                        <h4 class="title"><a href="/article/view/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server"
                                              title="<%=post.title%>"><%=post.title%></a>
                         </h4>
                     </div>
@@ -41,13 +41,13 @@
                 <% newPostList.forEach(function(post,i){if (i>0){%>
 
                 <li>
-                    <div class="recent-posts-img"><a href="/blog/post/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server" title="<%=post.title%>">
+                    <div class="recent-posts-img"><a href="/article/view/<%=post._id%>" class="ajax-link" ajax-target=".main-body" ajax-render="server" title="<%=post.title%>">
                         <img class="lazy thumbnail"
                              src="/public/static/images/timthumb1.jpg" alt="<%=post.title%>" style="display: inline-block;">
 
                     </a></div>
                     <div class="recent-posts-title">
-                        <h4 class="title"><a href="/blog/post/<%=post._id%>" title="<%=post.title%>" class="ajax-link" ajax-target=".main-body" ajax-render="server"><%=post.title%></a></h4>
+                        <h4 class="title"><a href="/article/view/<%=post._id%>" title="<%=post.title%>" class="ajax-link" ajax-target=".main-body" ajax-render="server"><%=post.title%></a></h4>
                         <span class="info"><i class="icon-calendar-1"></i> <%=post.createTime%></span>
 
                     </div>
@@ -64,7 +64,7 @@
 
             <% sidebar.hotPostList.forEach(function(post,i){ %>
             <li>
-                <a href="/blog/post/<%=post._id%>" title="<%=post.title%>" class="img ajax-link" ajax-target=".main-body" ajax-render="server" >
+                <a href="/article/view/<%=post._id%>" title="<%=post.title%>" class="img ajax-link" ajax-target=".main-body" ajax-render="server" >
                     <i class="icon-forward"></i>
                     <img class="lazy thumbnail"
                          src="/public/static/images/timthumb2.jpg"
@@ -74,7 +74,7 @@
                     <div class="entry-meta"><span><i
                             class="icon-comment-inv-alt2"></i> <%=post.replyCount%></span><span><i
                             class="icon-calendar-1"></i> <%=post.createTime%></span></div>
-                    <h4><a href="/blog/post/<%=post._id%>" title="<%=post.title%>" class="ajax-link" ajax-target=".main-body" ajax-render="server">
+                    <h4><a href="/article/view/<%=post._id%>" title="<%=post.title%>" class="ajax-link" ajax-target=".main-body" ajax-render="server">
                         <%=post.title%></a>
                     </h4>
                 </div>
@@ -114,7 +114,7 @@
             <div class="widge_tags">
                 <div class="tag-items">
                     <% sidebar.hotTagList.forEach(function(tag,i){ %>
-                    <a href="/search/tagid/<%=tag._id%>"
+                    <a href="/articles/tag/<%=tag.title%>"
                        class="tag-item ajax-link"
                        ajax-target=".main-body"
                        ajax-render="server"

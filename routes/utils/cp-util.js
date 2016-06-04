@@ -1,5 +1,5 @@
 var _ = require("underscore");
-var fs=require("fs");
+var fs = require("fs");
 var path = require('path');
 var async = require("async");
 var ejs = require('ejs');
@@ -7,12 +7,12 @@ var appConfig = require('../../app-config');
 var blogService = require("./blog-service");
 
 
-function dataFormat(date,fmt){
+function dataFormat(date, fmt) {
 
-    if(!date){
+    if (!date) {
         date = new Date();
     }
-    if (!fmt){
+    if (!fmt) {
         fmt = "yyyy-MM-dd hh:mm:ss";
     }
 
@@ -35,30 +35,30 @@ function isArray(obj) {
     return Object.prototype.toString.call(obj) === "[object Array]";
 }
 
-function getLayout(req){
-   return isXHR(req) ? false : "layout";
+function getLayout(req) {
+    return isXHR(req) ? false : "layout";
 }
 
-function isXHR(req){
+function isXHR(req) {
     var requestType = req.header("X-Requested-With");
-    return (requestType==="XMLHttpRequest");
+    return (requestType === "XMLHttpRequest");
 }
 
 
-var toJsPostList = function (doc,isSummary) {
+var toJsPostList = function (doc, isSummary) {
     var postList = [];
     for (var i = 0; i < doc.length; i++) {
         var obj = doc[i];
         var id = (obj._id || "").toString();
         obj.id = id;
-        if(isSummary){
+        if (isSummary) {
             postList.push({
                 id: id,
                 title: obj.title,
-                contentSummary:obj.contentSummary,
-                tags:obj.tags
+                contentSummary: obj.contentSummary,
+                tags: obj.tags
             });
-        }else {
+        } else {
             postList.push(obj);
         }
 
@@ -68,90 +68,87 @@ var toJsPostList = function (doc,isSummary) {
 };
 
 
-
-function isNeedTemplate(req){
+function isNeedTemplate(req) {
     var CP_NEED_TEMPLATE = req.header("CP_NEED_TEMPLATE");
-    return CP_NEED_TEMPLATE==="true";
+    return CP_NEED_TEMPLATE === "true";
 }
 
 
-function isAjaxServerRender(req){
+function isAjaxServerRender(req) {
     var CP_TEMPLATE_RENDER = req.header("CP_TEMPLATE_RENDER");
-    return CP_TEMPLATE_RENDER==="server";
+    return CP_TEMPLATE_RENDER === "server";
 }
 
-function parseTemplateName(names){
-    if(isArray(names)){
+function parseTemplateName(names) {
+    if (isArray(names)) {
         return {
-            renderTemplate:names[0],
-            ajaxTemplate:names[1]
+            renderTemplate: names[0],
+            ajaxTemplate: names[1]
         };
-    }else {
+    } else {
         return {
-            renderTemplate:names,
-            ajaxTemplate:names
+            renderTemplate: names,
+            ajaxTemplate: names
         };
 
     }
 }
 
-function getLoginUserFromSession (req, res) {
+function getLoginUserFromSession(req, res) {
     var loginUser = req.session.loginUser;
     return _.extend({
-        nickname:"luanhaipeng",
-        isLogin:false,
-        avatar:"",
-        role:"guest"//admin,user
-    },loginUser);
+        nickname: "luanhaipeng",
+        isLogin: false,
+        avatar: "",
+        role: "guest"//admin,user
+    }, loginUser);
 }
 
 var templateCache = {};
 
 
-
-var createSmartRender = function(req, res, next){
-    return function (templateName,data){
+var createSmartRender = function (req, res, next) {
+    return function (templateName, data) {
 
         var names = parseTemplateName(templateName);
 
 
-
-        if(isXHR(req) && !isAjaxServerRender(req)){
+        if (isXHR(req) && !isAjaxServerRender(req)) {
             var ajaxTemplate = names.ajaxTemplate;
-            if(isNeedTemplate(req)){
+            if (isNeedTemplate(req)) {
 
                 var template = templateCache[templateName];
 
-                if(template){
+                if (template) {
                     res.send({
-                        templateName:ajaxTemplate,
-                        template:template,
-                        data:data
+                        templateName: ajaxTemplate,
+                        template: template,
+                        data: data
                     });
                     res.end();
-                }else {
+                } else {
                     var viewsPath = path.join(__dirname, '../../views');
-                    var filePath = path.join(viewsPath,ajaxTemplate);
-                    if(!/.ejs$/.test(filePath)){
+                    var filePath = path.join(viewsPath, ajaxTemplate);
+                    if (!/.ejs$/.test(filePath)) {
                         filePath += ".ejs";
                     }
-                    fs.readFile(filePath,"utf-8",function(err,file){
-                        if(err){
+                    fs.readFile(filePath, "utf-8", function (err, file) {
+                        if (err) {
                             res.end("error");
                         }
                         file = (file.toString());
 
-                        file = file.replace(/\s+|(\r\n)/g," ");
+                        file = file.replace(/\s+|(\r\n)/g, " ");
 
                         //开发环境没有缓存
-                        if(appConfig._ENVIRONMENT!=="development"){
+                        if (appConfig._ENVIRONMENT !== "development") {
                             templateCache[ajaxTemplate] = file;
                         }
 
                         res.send({
-                            templateName:ajaxTemplate,
-                            template:file,
-                            data:data
+                            templateName: ajaxTemplate,
+                            template: file,
+                            data: data
                         });
                         res.end();
                     });
@@ -160,59 +157,55 @@ var createSmartRender = function(req, res, next){
             }
             else {
                 res.send({
-                    templateName:ajaxTemplate,
-                    template:null,
-                    data:data
+                    templateName: ajaxTemplate,
+                    template: null,
+                    data: data
                 });
                 res.end();
             }
 
-        }else {
+        } else {
 
             var renderTemplate = names.renderTemplate;
 
             //1、不是ajax请求
             //2、前台要求服务端渲染的话
-            var d =  _.extend({
-                loginUser:getLoginUserFromSession(req,res),
-                title:"coolpeng",
-                _ENVIRONMENT:appConfig._ENVIRONMENT,
+            var d = _.extend({
+                loginUser: getLoginUserFromSession(req, res),
+                title: "coolpeng",
+                _ENVIRONMENT: appConfig._ENVIRONMENT,
                 layout: getLayout(req)
-            },data);
-            res.render(renderTemplate,d);
+            }, data);
+            res.render(renderTemplate, d);
         }
     }
 };
 
 
-
-
-
-
-function renderOut(req,res,templateName,sidebarHTML,data){
-    var d =  _.extend({
-        loginUser:getLoginUserFromSession(req,res),
-        title:"coolpeng",
-        _ENVIRONMENT:appConfig._ENVIRONMENT,
-        HTML_SIDEBAR:sidebarHTML,
+function renderOut(req, res, templateName, sidebarHTML, data) {
+    var d = _.extend({
+        loginUser: getLoginUserFromSession(req, res),
+        title: "coolpeng",
+        _ENVIRONMENT: appConfig._ENVIRONMENT,
+        HTML_SIDEBAR: sidebarHTML,
         layout: getLayout(req) //如果是Ajax请求的话，没有layout
-    },data);
-    res.render(templateName,d);
+    }, data);
+    res.render(templateName, d);
 }
 
 
-var sidebarCachedTime=null;
-var createRenderWithSidebar = function(req, res, next){
-    return function (templateName,data){
+var sidebarCachedTime = null;
+var createRenderWithSidebar = function (req, res, next) {
+    return function (templateName, data) {
 
         //一小时更新一下缓存
-        if(!sidebarCachedTime || (new Date().getTime() - sidebarCachedTime > (1000 * 60 * 60))){
+        if (!sidebarCachedTime || (new Date().getTime() - sidebarCachedTime > (1000 * 60 * 60))) {
 
 
             async.parallel([
                     function (callback) {
-                        var filePath = path.join(appConfig.ROOT_DIR,"/views/blog/sidebar.ejs");
-                        fs.readFile(filePath,"utf-8",callback);
+                        var filePath = path.join(appConfig.ROOT_DIR, "/views/blog/sidebar.ejs");
+                        fs.readFile(filePath, "utf-8", callback);
                     },
                     function (callback) {
                         blogService.getBlogSidebar(callback);
@@ -221,23 +214,23 @@ var createRenderWithSidebar = function(req, res, next){
                 function (err, result) {
                     var tpl = result[0] || "";
 
-                   var sidebarHTML =  ejs.render(tpl,{
-                       sidebar:result[1]
-                   });
-                    renderOut(req,res,templateName,sidebarHTML,data);
+                    var sidebarHTML = ejs.render(tpl, {
+                        sidebar: result[1]
+                    });
+                    renderOut(req, res, templateName, sidebarHTML, data);
 
-                    //var cacheFile = path.join(appConfig.ROOT_DIR,"/cached/sidebar.html");
-                    //fs.writeFile(cacheFile,sidebarHTML,function(){
-                    //    sidebarCachedTime = new Date().getTime();
-                    //});
+                    var cacheFile = path.join(appConfig.ROOT_DIR, "/cached/sidebar.html");
+                    fs.writeFile(cacheFile, sidebarHTML, function () {
+                        sidebarCachedTime = new Date().getTime();
+                    });
                 }
             );
         }
         else {
-            var cacheFile = path.join(appConfig.ROOT_DIR,"/cached/sidebar.html");
-            fs.readFile(cacheFile,"utf-8",function(err,file){
+            var cacheFile = path.join(appConfig.ROOT_DIR, "/cached/sidebar.html");
+            fs.readFile(cacheFile, "utf-8", function (err, file) {
                 var sidebarHTML = file.toString();
-                renderOut(req,res,templateName,sidebarHTML,data);
+                renderOut(req, res, templateName, sidebarHTML, data);
             });
         }
     }
@@ -246,23 +239,55 @@ var createRenderWithSidebar = function(req, res, next){
 
 
 
+var sidebarMemCachedTemplate = null;
+var sidebarMemCachedTime = null;
+var createRenderWithSidebarMemCache = function (req, res, next) {
+    return function (templateName, data) {
+
+        //一小时更新一下缓存
+        if (!sidebarMemCachedTime || (new Date().getTime() - sidebarMemCachedTime > (1000 * 60 * 60))) {
+
+            async.parallel([
+                    function (callback) {
+                        //读取模板
+                        var filePath = path.join(appConfig.ROOT_DIR, "/views/blog/sidebar.ejs");
+                        fs.readFile(filePath, "utf-8", callback);
+                    },
+                    function (callback) {
+                        //读取数据库
+                        blogService.getBlogSidebar(callback);
+                    }
+                ],
+                function (err, result) {
+                    var tpl = result[0] || "";
+                    sidebarMemCachedTemplate = ejs.render(tpl, {
+                        sidebar: result[1]
+                    });
+                    renderOut(req, res, templateName, sidebarMemCachedTemplate, data);
+                    sidebarMemCachedTime = new Date().getTime();
+                }
+            );
+        }
+        else {
+            renderOut(req, res, templateName, sidebarMemCachedTemplate, data);
+        }
+    }
+};
 
 
-
-function smartParseAndRender(){
-    return function smartParseAndRender(req, res, next){
-        res.smartRender = createSmartRender(req, res, next);
-        res.renderWithSidebar = createRenderWithSidebar(req, res, next);
+function smartParseAndRender() {
+    return function smartParseAndRender(req, res, next) {
+        //res.smartRender = createSmartRender(req, res, next);
+        //res.renderWithSidebar = createRenderWithSidebar(req, res, next);
+        res.renderWithSidebar = createRenderWithSidebarMemCache(req, res, next);
         next();
     }
 }
 
 
-
-
-function isPermissionCreatePost(req){
+function isPermissionCreatePost(req) {
     var loginUser = req.session.loginUser;
-    if(!loginUser || !loginUser.isLogin || (loginUser.role!=="admin")){
+    if (!loginUser || !loginUser.isLogin || (loginUser.role !== "admin")) {
         return false;
     }
     return true;

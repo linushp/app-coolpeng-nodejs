@@ -8,11 +8,11 @@ var post = postList[i];
             <div class="posts-default-title">
                 <div class="post-entry-categories">
                     <% var tags = post.tags || []; tags.forEach(function(tag){%>
-                    <a href="/search/tag/<%=tag%>" rel="tag"><%=tag%></a>
+                    <a href="/articles/tag/<%=tag%>" rel="tag"><%=tag%></a>
                     <% }); %>
                 </div>
                 <h2>
-                    <a class="ajax-link" ajax-target=".main-body" ajax-render="server" href="/blog/post/<%=post._id%>" title="<%=post.title%>">
+                    <a class="ajax-link" ajax-target=".main-body" ajax-render="server" href="/article/view/<%=post._id%>" title="<%=post.title%>">
                         <%=post.title%>
                     </a>
                 </h2>
@@ -30,7 +30,7 @@ var post = postList[i];
                                                  style="display: block;"></div>
                         <a href="/" target="_blank"><%=post.createUserNickName%></a></li>
                     <li class="ico-cat"><i class="icon-list-1"></i>
-                        <a href="/search/topicId/<%=post.belongTopicId%>"><%=post.belongTopicTitle%></a>
+                        <a href="/search/topic/<%=post.belongTopicId%>"><%=post.belongTopicTitle%></a>
                     </li>
                     <li class="ico-time"><i class="icon-clock-1"></i> <%=post.createTime%></li>
                     <li class="ico-eye"><i class="icon-eye-1"></i>  <%=post.viewCount%></li>

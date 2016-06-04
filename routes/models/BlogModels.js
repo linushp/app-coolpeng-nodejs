@@ -129,6 +129,7 @@ Comment.add({
     createDate: Date,
     createUserNickName: String,
     createUserAvatar:String,
+    createUserRole:String,
     floorNumber:Number
 });
 
