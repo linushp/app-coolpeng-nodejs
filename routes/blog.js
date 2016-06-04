@@ -4,8 +4,10 @@ var async = require("async");
 var router = express.Router();
 var BlogPost = require("./models/BlogModels").BlogPost;
 var BlogTopic = require("./models/BlogModels").BlogTopic;
+var TagModel = require("./models/BlogModels").TagModel;
 var cpPage = require("./utils/cp-page");
 var cpUtil = require("./utils/cp-util");
+var blogService = require("./utils/blog-service");
 var toJsPostList = cpUtil.toJsPostList;
 
 
@@ -28,9 +30,9 @@ function PostIndex(req, res, next) {
     var condition = {};
 
     async.parallel([
-            function (callback) {
-                BlogTopic.find(callback);
-            },
+            //function (callback) {
+            //    blogService.getBlogSidebar(callback);
+            //},
             function (callback) {
                 BlogPost.count(condition, callback);
             },
@@ -39,9 +41,10 @@ function PostIndex(req, res, next) {
             }
         ],
         function (err, result) {
-            var topicList = result[0];
-            var recordCount = result[1];
-            var postList = toJsPostList(result[2] || [], true);
+            //var sidebar = result[0]||{};
+            var recordCount = result[0];
+            //var postList = toJsPostList(result[1] || [], true);
+            var postList = result[1] || []; //服务端渲染，不需要
 
             var pageCount = parseInt(recordCount / pageSize, 10);
             pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
@@ -54,9 +57,9 @@ function PostIndex(req, res, next) {
                 }
             });
 
-            res.smartRender('blog/index', {
+            res.renderWithSidebar('blog/index', {
                 title: 'Express',
-                topicList: topicList,
+                //sidebar: sidebar,
                 postList: postList,
                 postListPage: layPageHTML
             });
@@ -81,9 +84,9 @@ function PostViewByID(req, res, next) {
         if (doc && doc.length > 0) {
             var postList = toJsPostList(doc, false);
             var post = postList[0];
-            res.smartRender(['blog/post', "blog/post-content"], {title: 'Express', post: post});
+            res.renderWithSidebar('blog/post', {title: 'Express', post: post});
         } else {
-            res.smartRender(['blog/post', "blog/post-content"], {title: 'Express', post: {title: "没有找到"}});
+            res.renderWithSidebar('blog/post', {title: 'Express', post: {title: "没有找到"}});
         }
     });
 
@@ -102,7 +105,7 @@ function CreatePost(req, res, next) {
 
     BlogTopic.find(function(err,doc){
         var topicList = doc||[];
-        res.smartRender('blog/post-create', {
+        res.renderWithSidebar('blog/post-create', {
             title: '创建帖子',
             topicList:topicList
         });
@@ -151,7 +154,8 @@ function CreatePostSubmit(req, res, next) {
                 updateUserNickName:loginUser.nickname,
                 updateUserAvatar:loginUser.avatar,
                 tags:tags,
-                belongTopicId:data.belongTopicId
+                belongTopicId:data.belongTopicId,
+                belongTopicTitle:data.belongTopicTitle
             }
         };
 
@@ -171,7 +175,9 @@ function CreatePostSubmit(req, res, next) {
         data.createUserAvatar = loginUser.avatar;
         data.viewCount = 0;
         data.replyCount = 0;
+        data.likeCount = 0;
         data.tags = tags;
+        data.isRecommend = data.isRecommend || false;
 
         //新建
         var post = new BlogPost(data);
@@ -182,6 +188,8 @@ function CreatePostSubmit(req, res, next) {
                 res.end("ok");
             }
         });
+
+        TagModel.batchSaveTagOrIncrementPostCount(tags);
     }
 }
 
@@ -221,7 +229,7 @@ function CreatePostComment(req, res, next){
             BlogPost.addComment(id, {
                 title: "",
                 content: content,
-                date: new Date(),
+                createDate: new Date(),
                 createTime: cpUtil.dataFormat(),
                 createUserNickName: loginUser.nickname,
                 createUserAvatar: loginUser.avatar,

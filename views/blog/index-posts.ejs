@@ -12,7 +12,7 @@ var post = postList[i];
                     <% }); %>
                 </div>
                 <h2>
-                    <a class="ajax-link" ajax-target=".main-body" ajax-render="server" href="/blog/post/<%=post.id%>" title="<%=post.title%>">
+                    <a class="ajax-link" ajax-target=".main-body" ajax-render="server" href="/blog/post/<%=post._id%>" title="<%=post.title%>">
                         <%=post.title%>
                     </a>
                 </h2>
@@ -24,18 +24,17 @@ var post = postList[i];
                 <ul>
 
                     <li class="post-author">
-                        <div class="avatar"><img alt=""
-                                                 src="http://cn.gravatar.com/avatar/afa39accf8700cbbe7b13e1d01aa5b17?s=50&amp;d=mm&amp;r=g"
-                                                 data-original="http://cn.gravatar.com/avatar/afa39accf8700cbbe7b13e1d01aa5b17?s=50&amp;d=mm&amp;r=g"
-                                                 srcset="http://cn.gravatar.com/avatar/afa39accf8700cbbe7b13e1d01aa5b17?s=100&amp;d=mm&amp;r=g 2x"
-                                                 class="lazy avatar avatar-50 photo" height="50" width="50"
+                        <div class="avatar"><img alt="<%=post.createUserNickName%>"
+                                                 src="<%=post.createUserAvatar%>"
+                                                 class="avatar" height="50" width="50"
                                                  style="display: block;"></div>
-                        <a href="http://grace.wpbyg.com/?author=1" target="_blank">suxing</a></li>
-                    <li class="ico-cat"><i class="icon-list-1"></i> <a href="http://grace.wpbyg.com/?cat=12">说正经</a>
+                        <a href="/" target="_blank"><%=post.createUserNickName%></a></li>
+                    <li class="ico-cat"><i class="icon-list-1"></i>
+                        <a href="/search/topicId/<%=post.belongTopicId%>"><%=post.belongTopicTitle%></a>
                     </li>
-                    <li class="ico-time"><i class="icon-clock-1"></i> 7个月前 (10-25)</li>
-                    <li class="ico-eye"><i class="icon-eye-1"></i> 413</li>
-                    <li class="ico-like"><i class="icon-heart"></i> 7</li>
+                    <li class="ico-time"><i class="icon-clock-1"></i> <%=post.createTime%></li>
+                    <li class="ico-eye"><i class="icon-eye-1"></i>  <%=post.viewCount%></li>
+                    <li class="ico-like"><i class="icon-heart"></i> <%=post.likeCount%></li>
                 </ul>
             </div>
         </div>

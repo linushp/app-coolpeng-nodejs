@@ -13,7 +13,8 @@ var appConfig = require('./app-config');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var blog = require('./routes/blog');
+var articles = require('./routes/articles');
+var article = require('./routes/article');
 var install = require('./routes/install');
 
 var app = express();
@@ -44,7 +45,8 @@ app.use(cpUtil.smartParseAndRender());
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/blog', blog);
+app.use('/articles', articles);
+app.use('/article', article);
 app.use('/install', install);
 
 // catch 404 and forward to error handler

@@ -51,6 +51,7 @@ jQuery(document).ready(function ($) {
         var $box = $("#create-post-box");
         var title = $box.find("input[name=title]").val();
         var belongTopicId = $box.find("select[name=belongTopicId]").val();
+        var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
         var tagString = $box.find("input[name=tagString]").val();
 
         $.post("/blog/post-create",{
@@ -58,7 +59,8 @@ jQuery(document).ready(function ($) {
             content:content,
             contentSummary:contentSummary,
             tagString:tagString,
-            belongTopicId:belongTopicId
+            belongTopicId:belongTopicId,
+            belongTopicTitle:belongTopicTitle
         },function(res){
             if(res==="ok"){
                 layer.msg("新建成功")
@@ -79,6 +81,23 @@ jQuery(document).ready(function ($) {
         $.post("/blog/post-comment/" + id, comment, function (d) {
             $(".create-post-comment-msg").html(d);
         });
+    });
+
+
+
+
+    $(document).on('submit','form.sidebar-search',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+
+        var keyword = $this.find("input[type=text]").val();
+        keyword = encodeURIComponent(keyword);
+        var href="/articles/search/" + keyword;
+        //ajaxTarget,href,ajaxRender,$eventSource
+        ajaxGoTo(".main-body",href,"server",$this);
+        return false;
     });
 
 

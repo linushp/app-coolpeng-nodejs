@@ -1,7 +1,10 @@
 var _ = require("underscore");
 var fs=require("fs");
 var path = require('path');
+var async = require("async");
+var ejs = require('ejs');
 var appConfig = require('../../app-config');
+var blogService = require("./blog-service");
 
 
 function dataFormat(date,fmt){
@@ -46,7 +49,8 @@ var toJsPostList = function (doc,isSummary) {
     var postList = [];
     for (var i = 0; i < doc.length; i++) {
         var obj = doc[i];
-        var id = (obj._id || {}).toString();
+        var id = (obj._id || "").toString();
+        obj.id = id;
         if(isSummary){
             postList.push({
                 id: id,
@@ -55,15 +59,7 @@ var toJsPostList = function (doc,isSummary) {
                 tags:obj.tags
             });
         }else {
-            postList.push({
-                id: id,
-                title: obj.title,
-                content: obj.content,
-                createTime: obj.createTime,
-                createUser: obj.createUser,
-                comments: obj.comments,
-                tags:obj.tags
-            });
+            postList.push(obj);
         }
 
     }
@@ -111,15 +107,17 @@ function getLoginUserFromSession (req, res) {
 
 var templateCache = {};
 
+
+
 var createSmartRender = function(req, res, next){
     return function (templateName,data){
 
         var names = parseTemplateName(templateName);
-        var renderTemplate = names.renderTemplate;
-        var ajaxTemplate = names.ajaxTemplate;
+
+
 
         if(isXHR(req) && !isAjaxServerRender(req)){
-
+            var ajaxTemplate = names.ajaxTemplate;
             if(isNeedTemplate(req)){
 
                 var template = templateCache[templateName];
@@ -171,9 +169,10 @@ var createSmartRender = function(req, res, next){
 
         }else {
 
-            //如果不是ajax请求，获取前台要求服务端渲染的话
-            //服务端渲染
+            var renderTemplate = names.renderTemplate;
 
+            //1、不是ajax请求
+            //2、前台要求服务端渲染的话
             var d =  _.extend({
                 loginUser:getLoginUserFromSession(req,res),
                 title:"coolpeng",
@@ -189,10 +188,71 @@ var createSmartRender = function(req, res, next){
 
 
 
+
+function renderOut(req,res,templateName,sidebarHTML,data){
+    var d =  _.extend({
+        loginUser:getLoginUserFromSession(req,res),
+        title:"coolpeng",
+        _ENVIRONMENT:appConfig._ENVIRONMENT,
+        HTML_SIDEBAR:sidebarHTML,
+        layout: getLayout(req) //如果是Ajax请求的话，没有layout
+    },data);
+    res.render(templateName,d);
+}
+
+
+var sidebarCachedTime=null;
+var createRenderWithSidebar = function(req, res, next){
+    return function (templateName,data){
+
+        //一小时更新一下缓存
+        if(!sidebarCachedTime || (new Date().getTime() - sidebarCachedTime > (1000 * 60 * 60))){
+
+
+            async.parallel([
+                    function (callback) {
+                        var filePath = path.join(appConfig.ROOT_DIR,"/views/blog/sidebar.ejs");
+                        fs.readFile(filePath,"utf-8",callback);
+                    },
+                    function (callback) {
+                        blogService.getBlogSidebar(callback);
+                    }
+                ],
+                function (err, result) {
+                    var tpl = result[0] || "";
+
+                   var sidebarHTML =  ejs.render(tpl,{
+                       sidebar:result[1]
+                   });
+                    renderOut(req,res,templateName,sidebarHTML,data);
+
+                    //var cacheFile = path.join(appConfig.ROOT_DIR,"/cached/sidebar.html");
+                    //fs.writeFile(cacheFile,sidebarHTML,function(){
+                    //    sidebarCachedTime = new Date().getTime();
+                    //});
+                }
+            );
+        }
+        else {
+            var cacheFile = path.join(appConfig.ROOT_DIR,"/cached/sidebar.html");
+            fs.readFile(cacheFile,"utf-8",function(err,file){
+                var sidebarHTML = file.toString();
+                renderOut(req,res,templateName,sidebarHTML,data);
+            });
+        }
+    }
+};
+
+
+
+
+
+
+
 function smartParseAndRender(){
     return function smartParseAndRender(req, res, next){
         res.smartRender = createSmartRender(req, res, next);
-
+        res.renderWithSidebar = createRenderWithSidebar(req, res, next);
         next();
     }
 }

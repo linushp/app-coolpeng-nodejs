@@ -1,5 +1,6 @@
 (function (window) {
 
+
     window.iniAjaxLink = function(config){
 
         var $ = jQuery;
@@ -13,22 +14,10 @@
 
             var templateCache = {};
 
-            $(document).on("click", ".ajax-link", function (e) {
+            var ajaxGoTo = function(ajaxTarget,href,ajaxRender,$eventSource){
 
-                var $this = $(this);
-                var ajaxTarget = $this.attr("ajax-target");
-
-                //标记位，是否启用服务端渲染
-                var ajaxRender = $this.attr("ajax-render") ||"";
-                var isAjaxSSR = (ajaxRender ==="server");
-
-                if (!ajaxTarget || ajaxTarget.length === 0) {
-                    return;
-                }
-
-                e.preventDefault();
-                e.stopPropagation();
-
+                //默认服务端渲染
+                var isAjaxSSR = (ajaxRender !=="client");
                 var $ajaxTarget = $(ajaxTarget);
 
                 if (!ajaxHandler) {
@@ -41,8 +30,6 @@
                 }
 
 
-                var $link = $(this);
-                var href = $link.attr("href");
 
                 var loadingTimeout = window.setTimeout(function(){
                     $ajaxTarget.html("loading...");
@@ -55,17 +42,19 @@
                     data = data||{};
 
                     $ajaxTarget.html(html);
+
                     var state = {
                         url: href,
-                        title: data.title || $link.html(),
+                        title: data.title || document.title,
                         html: html,
                         ajaxTarget: ajaxTarget
                     };
 
                     window.history.pushState(state, null, href);
+
                 };
 
-                 ajaxHandler = $.ajax({
+                ajaxHandler = $.ajax({
                     url:href,
                     dataType: (isAjaxSSR?"html":"json"),
                     type:"get",
@@ -93,19 +82,45 @@
                         }
                     },
                     beforeSend: function(XMLHttpRequest) {
-                        var templateName = config.getTemplateName(href,$link);
-                        var template = null;
-                        if(templateName){
-                            template = templateCache[templateName];
-                        }
-                        if(template){
-                            XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "false");
-                        }else{
-                            XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "true");
+                        if(!isAjaxSSR){
+                            var templateName = config.getTemplateName(href,$eventSource);
+                            var template = null;
+                            if(templateName){
+                                template = templateCache[templateName];
+                            }
+                            if(template){
+                                XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "false");
+                            }else{
+                                XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "true");
+                            }
                         }
                         XMLHttpRequest.setRequestHeader("CP_TEMPLATE_RENDER", ajaxRender);
                     }
                 });
+
+            };
+
+            window.ajaxGoTo = ajaxGoTo;
+
+            $(document).on("click", ".ajax-link", function (e) {
+
+                $(window).scrollTop(0);
+
+
+                var $link = $(this);
+                var ajaxTarget = $link.attr("ajax-target");
+                var href = $link.attr("href");
+                //标记位，是否启用服务端渲染
+                var ajaxRender = $link.attr("ajax-render") ||"";
+
+                if (!ajaxTarget || ajaxTarget.length === 0) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                ajaxGoTo(ajaxTarget,href,ajaxRender,$link);
 
             });
 

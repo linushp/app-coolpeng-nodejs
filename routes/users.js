@@ -18,6 +18,7 @@ router.post('/login', function(req, res, next) {
        username:"luanhaipeng",
        isLogin:true,
        role:"admin",
+       avatar:"/public/static/images/avatar1.png",
        email:"910010653@qq.com"
      };
   }else {
