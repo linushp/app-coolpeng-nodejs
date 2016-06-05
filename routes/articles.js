@@ -56,10 +56,14 @@ function articlesSearch(req, res, next) {
     });
 }
 function articlesSearchTag(req, res, next) {
-
+    res.smartRender("deving",{});
 }
 function articlesSearchTopicId(req, res, next) {
+    res.smartRender("deving",{});
+}
 
+function articlesSearchByUserEmail(req, res, next) {
+    res.smartRender("deving",{});
 }
 
 
@@ -70,5 +74,7 @@ router.get('/search/',articlesIndex);
 router.get('/search/:keyword',articlesSearch);
 router.get('/tag/:tagName',articlesSearchTag);
 router.get('/topic/:topicId',articlesSearchTopicId);
+router.get('/user/',articlesSearchByUserEmail);
+router.get('/user/:createUserEmail',articlesSearchByUserEmail);
 
 module.exports = router;

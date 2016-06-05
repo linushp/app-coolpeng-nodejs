@@ -120,6 +120,7 @@ var createSmartRender = function (req, res, next) {
         var d = _.extend({
             loginUser: getLoginUserFromSession(req, res),
             title: "coolpeng",
+            PAGE_FOOTER:"",
             _ENVIRONMENT: appConfig._ENVIRONMENT,
             layout: getLayout(req)
         }, data);
@@ -128,10 +129,11 @@ var createSmartRender = function (req, res, next) {
 };
 
 
-function renderOut(req, res, templateName, sidebarHTML, data) {
+function renderOutWithSidebar(req, res, templateName, sidebarHTML, data) {
     var d = _.extend({
         loginUser: getLoginUserFromSession(req, res),
         title: "coolpeng",
+        PAGE_FOOTER:"",
         _ENVIRONMENT: appConfig._ENVIRONMENT,
         HTML_SIDEBAR: sidebarHTML,
         layout: getLayout(req) //如果是Ajax请求的话，没有layout
@@ -163,7 +165,7 @@ var createRenderWithSidebar = function (req, res, next) {
                     var sidebarHTML = ejs.render(tpl, {
                         sidebar: result[1]
                     });
-                    renderOut(req, res, templateName, sidebarHTML, data);
+                    renderOutWithSidebar(req, res, templateName, sidebarHTML, data);
 
                     var cacheFile = path.join(appConfig.ROOT_DIR, "/cached/sidebar.html");
                     fs.writeFile(cacheFile, sidebarHTML, function () {
@@ -176,7 +178,7 @@ var createRenderWithSidebar = function (req, res, next) {
             var cacheFile = path.join(appConfig.ROOT_DIR, "/cached/sidebar.html");
             fs.readFile(cacheFile, "utf-8", function (err, file) {
                 var sidebarHTML = file.toString();
-                renderOut(req, res, templateName, sidebarHTML, data);
+                renderOutWithSidebar(req, res, templateName, sidebarHTML, data);
             });
         }
     }
@@ -214,13 +216,13 @@ var createRenderWithSidebarMemCache = function (req, res, next) {
                     sidebarMemCachedTemplate = ejs.render(tpl, {
                         sidebar: result[1]
                     });
-                    renderOut(req, res, templateName, sidebarMemCachedTemplate, data);
+                    renderOutWithSidebar(req, res, templateName, sidebarMemCachedTemplate, data);
                     sidebarMemCachedTime = new Date().getTime();
                 }
             );
         }
         else {
-            renderOut(req, res, templateName, sidebarMemCachedTemplate, data);
+            renderOutWithSidebar(req, res, templateName, sidebarMemCachedTemplate, data);
         }
     }
 };

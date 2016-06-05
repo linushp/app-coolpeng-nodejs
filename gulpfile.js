@@ -85,6 +85,10 @@ gulp.task('copyTheme', function() {
 
     gulp.src(['./public/src/theme/img/*'])
         .pipe(gulp.dest('./public/release/css/img/'));
+
+
+    gulp.src(['./public/lib/layer/skin/default/*'])
+        .pipe(gulp.dest('./public/release/css/default/'));
 });
 
 

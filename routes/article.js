@@ -1,5 +1,7 @@
 var express = require('express');
 var _ = require("underscore");
+var path = require('path');
+var fs = require("fs");
 var async = require("async");
 var router = express.Router();
 var BlogPost = require("./models/BlogModels").BlogPost;
@@ -34,13 +36,33 @@ function articleView(req, res, next) {
 
 //GET      /article/create
 function articleCreateGet(req, res, next) {
-    BlogTopic.find(function(err,doc){
-        var topicList = doc||[];
+    async.parallel([
+        function(callback){
+            BlogTopic.find(callback);
+        },
+        function (callback) {
+            //读取模板
+            var filePath = path.join(appConfig.ROOT_DIR, "/views/blog/post-create-footer.html");
+            fs.readFile(filePath, "utf-8", callback);
+        }
+    ],function(err,result){
+        var topicList = result[0]||[];
+        var PAGE_FOOTER = result[1] || "";
         res.renderWithSidebar('blog/post-create', {
             title: '创建帖子',
-            topicList:topicList
+            isCreatePost:true,
+            isModifyPost:false,
+            topicList:topicList,
+            PAGE_FOOTER:PAGE_FOOTER.toString(),
+            post:{
+                title:"",
+                content:"",
+                belongTopicId:"",
+                tagString:""
+            }
         });
     });
+
 }
 
 //POST      /article/create
@@ -68,6 +90,7 @@ function articleCreateSave(req, res, next) {
     data.createDate = new Date();
     data.createUserNickName = loginUser.nickname;
     data.createUserAvatar = loginUser.avatar;
+    data.createUserEmail = loginUser.email;
     data.viewCount = 0;
     data.replyCount = 0;
     data.likeCount = 0;
@@ -103,16 +126,27 @@ function articleModifyGet(req, res, next) {
         },
         function(callback){
             BlogPost.find({_id:articleId},callback);
+        },
+        function (callback) {
+            //读取模板
+            var filePath = path.join(appConfig.ROOT_DIR, "/views/blog/post-create-footer.html");
+            fs.readFile(filePath, "utf-8", callback);
         }
     ],function(err,result){
         var topicList = result[0]||[];
         var postList = result[1];
         if (postList && postList.length > 0){
             var post = postList[0];
+            var tags = post.tags || [];
+            post.tagString = tags.join(" , ");
+            var PAGE_FOOTER = result[2] || "";
             res.renderWithSidebar('blog/post-create', {
-                title: '创建帖子',
+                title: '修改文章',
                 topicList:topicList,
-                post:post
+                post:post,
+                isCreatePost:false,
+                isModifyPost:true,
+                PAGE_FOOTER:PAGE_FOOTER.toString()
             });
         }else{
             res.end("post is not Found")
@@ -181,7 +215,7 @@ function articleModifySave(req, res, next) {
 function articleDelete(req, res, next) {
 
     if (!cpUtil.isPermissionCreatePost(req)) {
-        res.end("no permission");
+        res.end("err_no_permission");
         return;
     }
 

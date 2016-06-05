@@ -21,6 +21,17 @@
     forever start -l forever.log -o out.log -e err.log app.js   #输出日志和错误
 
 
+9、iptables
+    路径： /etc/sysconfig
+    保存临时设置：service iptables save
+    重启：service iptables restart
+
+
+#安装nodejs
+sudo tar --strip-components 1 -xzvf node-v* -C /usr/local
+
+
+
 #Nginx
 /usr/local/nginx/conf
 /usr/local/nginx/sbin/nginx -s reload
@@ -31,7 +42,7 @@
 
 #启动mongodb
 /root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod --dbpath /root/coolpeng-node-db
- nohup /root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod --dbpath /root/coolpeng-node-db  &
+后台： nohup /root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod --dbpath /root/coolpeng-node-db  &
 
-#安装nodejs
-sudo tar --strip-components 1 -xzvf node-v* -C /usr/local
+#iptables
+service iptables start

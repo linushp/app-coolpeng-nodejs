@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   var body =  req.body ||{};
   var loginUser;
-  if(body.nickname==="luanhaipeng" && body.email==="xiaozhu123!"){
+  if(body.nickname==="luanhaipeng" && body.email==="xiaozhu123!@coolpeng.cn"){
      loginUser ={
        nickname:"栾海鹏",
        username:"luanhaipeng",
@@ -22,7 +22,19 @@ router.post('/login', function(req, res, next) {
        avatar:"/public/static/images/avatar1.png",
        email:"910010653@qq.com"
      };
-  }else {
+  }
+  else if(body.nickname==="zhufengzhu" && body.email==="qq541tz@coolpeng.cn"){
+    loginUser ={
+      nickname:"朱凤珠",
+      username:"zhufengzhu",
+      isLogin:true,
+      isAdmin:true,
+      role:"admin",
+      avatar:"/public/static/images/avatar2.jpg",
+      email:"xxx@qq.com"
+    };
+  }
+  else {
 
     loginUser ={
       nickname:body.nickname,
@@ -41,8 +53,8 @@ router.post('/login', function(req, res, next) {
     }else {
       if(doc && doc.length>0){
         var u = doc[0];
-        if(u.email!=loginUser.email){
-          res.end("此昵称已被使用过，但是邮箱跟之前不一样。请重新输入。")
+        if(u.email!=loginUser.email && !loginUser.isAdmin){
+          res.end("err_user_email")
         }else {
           UserModel.update({_id:u._id},{"$push":{"loginTimes":cpUtil.dataFormat()}},function(){
 

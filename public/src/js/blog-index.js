@@ -37,10 +37,7 @@ jQuery(document).ready(function ($) {
     }
 
 
-    /**
-     * 新建帖子按钮
-     */
-    onClick(".create-post-submit", function () {
+    function getCreatePostContent(){
 
         var editor = UE.getEditor("create-ueditor");
         var content = editor.getContent();
@@ -54,14 +51,24 @@ jQuery(document).ready(function ($) {
         var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
         var tagString = $box.find("input[name=tagString]").val();
 
-        $.post("/article/create", {
+        return {
             title: title,
             content: content,
             contentSummary: contentSummary,
             tagString: tagString,
             belongTopicId: belongTopicId,
             belongTopicTitle: belongTopicTitle
-        }, function (res) {
+        };
+    }
+
+    /**
+     * 新建帖子按钮
+     */
+    onClick(".create-post-submit", function () {
+
+        var data = getCreatePostContent();
+
+        $.post("/article/create", data, function (res) {
             if (res === "ok") {
                 layer.msg("&nbsp;&nbsp;&nbsp;新建成功&nbsp;&nbsp;&nbsp;", {
                     time: 0 ,//不自动关闭
@@ -74,6 +81,32 @@ jQuery(document).ready(function ($) {
         }, "text");
 
     });
+
+
+    /**
+     * 修改帖子按钮
+     */
+    onClick(".modify-post-submit", function () {
+
+        var id = $(this).data("id");
+        var data = getCreatePostContent();
+
+        $.post("/article/modify/" + id, data, function (res) {
+            if (res === "ok") {
+                layer.msg("&nbsp;&nbsp;&nbsp;修改成功&nbsp;&nbsp;&nbsp;", {
+                    time: 0,//不自动关闭
+                    btn: ['OK'],
+                    yes: function () {
+                        window.location.href = "/articles/";
+                    }
+                });
+            }
+        }, "text");
+
+    });
+
+
+
 
     //点击文章的回复按钮
     onClick(".create-post-comment-submit", function () {
@@ -156,9 +189,15 @@ jQuery(document).ready(function ($) {
                         nickname: nickname,
                         email: email
                     }, function (d) {
-                        layer.alert("登录成功", function () {
-                            window.location.reload();
-                        });
+
+                        var errText = getBlogErrI18N(d);
+                        if(errText){
+                            layer.msg(errText);
+                        }else {
+                            layer.alert("登录成功", function () {
+                                window.location.reload();
+                            });
+                        }
                     });
                 }
             });
@@ -167,5 +206,43 @@ jQuery(document).ready(function ($) {
 
     });
 
+
+
+    //删除帖子按钮
+    onClick(".cp-post-delete",function(){
+
+        var $this = $(this);
+
+        //询问框
+        layer.confirm('确定要删除这篇文章吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+
+            var $postItem = $this.closest(".cp-post-item");
+            var postId = $postItem.data("id");
+            $.get("/article/delete/"+postId,function(d){
+                var errText = getBlogErrI18N(d);
+                if (errText){
+                    layer.msg(errText);
+                }else {
+                    layer.msg("删除成功",function(){
+                        window.location.reload();
+                    });
+                }
+            },"text")
+
+        }, function(){
+        });
+
+
+    });
+
+    //编辑帖子按钮
+    onClick(".cp-post-edit",function(){
+        var $this = $(this);
+        var $postItem = $this.closest(".cp-post-item");
+        var postId = $postItem.data("id");
+        window.location.href = "/article/modify/"+postId;
+    });
 
 });

@@ -641,13 +641,16 @@ jQuery(document).ready(function ($) {
 (function(window){
 
     var blogErrI18N = {
+        err:"服务器发生错误",
+        err_no_permission:"没有权限",
         err_no_article:"没有找到此文章，可能已经被删除了。",
         err_max_reply:"最多只能有50条评论，评论功能已关闭。",
         err_update:"更新失败",
         err_no_reply:"没有填写评论内容",
         err_no_login:"用户没有登录",
         err_reply_too_long:"您输入的评论太长了，最多只能评论300字！",
-        err_op_too_much:"您操作太频繁了，休息一分钟吧。"
+        err_op_too_much:"您操作太频繁了，休息一分钟吧。",
+        err_user_email:"此昵称已被使用过，但是邮箱跟之前不一样。请重新输入。"
     };
 
 
@@ -702,10 +705,7 @@ jQuery(document).ready(function ($) {
     }
 
 
-    /**
-     * 新建帖子按钮
-     */
-    onClick(".create-post-submit", function () {
+    function getCreatePostContent(){
 
         var editor = UE.getEditor("create-ueditor");
         var content = editor.getContent();
@@ -719,14 +719,24 @@ jQuery(document).ready(function ($) {
         var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
         var tagString = $box.find("input[name=tagString]").val();
 
-        $.post("/article/create", {
+        return {
             title: title,
             content: content,
             contentSummary: contentSummary,
             tagString: tagString,
             belongTopicId: belongTopicId,
             belongTopicTitle: belongTopicTitle
-        }, function (res) {
+        };
+    }
+
+    /**
+     * 新建帖子按钮
+     */
+    onClick(".create-post-submit", function () {
+
+        var data = getCreatePostContent();
+
+        $.post("/article/create", data, function (res) {
             if (res === "ok") {
                 layer.msg("&nbsp;&nbsp;&nbsp;新建成功&nbsp;&nbsp;&nbsp;", {
                     time: 0 ,//不自动关闭
@@ -739,6 +749,32 @@ jQuery(document).ready(function ($) {
         }, "text");
 
     });
+
+
+    /**
+     * 修改帖子按钮
+     */
+    onClick(".modify-post-submit", function () {
+
+        var id = $(this).data("id");
+        var data = getCreatePostContent();
+
+        $.post("/article/modify/" + id, data, function (res) {
+            if (res === "ok") {
+                layer.msg("&nbsp;&nbsp;&nbsp;修改成功&nbsp;&nbsp;&nbsp;", {
+                    time: 0,//不自动关闭
+                    btn: ['OK'],
+                    yes: function () {
+                        window.location.href = "/articles/";
+                    }
+                });
+            }
+        }, "text");
+
+    });
+
+
+
 
     //点击文章的回复按钮
     onClick(".create-post-comment-submit", function () {
@@ -821,9 +857,15 @@ jQuery(document).ready(function ($) {
                         nickname: nickname,
                         email: email
                     }, function (d) {
-                        layer.alert("登录成功", function () {
-                            window.location.reload();
-                        });
+
+                        var errText = getBlogErrI18N(d);
+                        if(errText){
+                            layer.msg(errText);
+                        }else {
+                            layer.alert("登录成功", function () {
+                                window.location.reload();
+                            });
+                        }
                     });
                 }
             });
@@ -832,5 +874,43 @@ jQuery(document).ready(function ($) {
 
     });
 
+
+
+    //删除帖子按钮
+    onClick(".cp-post-delete",function(){
+
+        var $this = $(this);
+
+        //询问框
+        layer.confirm('确定要删除这篇文章吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+
+            var $postItem = $this.closest(".cp-post-item");
+            var postId = $postItem.data("id");
+            $.get("/article/delete/"+postId,function(d){
+                var errText = getBlogErrI18N(d);
+                if (errText){
+                    layer.msg(errText);
+                }else {
+                    layer.msg("删除成功",function(){
+                        window.location.reload();
+                    });
+                }
+            },"text")
+
+        }, function(){
+        });
+
+
+    });
+
+    //编辑帖子按钮
+    onClick(".cp-post-edit",function(){
+        var $this = $(this);
+        var $postItem = $this.closest(".cp-post-item");
+        var postId = $postItem.data("id");
+        window.location.href = "/article/modify/"+postId;
+    });
 
 });

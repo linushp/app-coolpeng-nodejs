@@ -2,7 +2,7 @@
 for (var i = 0 ; i < postList.length;i++){
 var post = postList[i];
 %>
-<li class="ajax-load-con content">
+<li class="ajax-load-con content cp-post-item" id="cp-post-item-<%=post._id%>" data-id="<%=post._id%>">
     <div class="content-box posts-aside">
         <div class="posts-default-content">
             <div class="posts-default-title">
@@ -28,13 +28,23 @@ var post = postList[i];
                                                  src="<%=post.createUserAvatar%>"
                                                  class="avatar" height="50" width="50"
                                                  style="display: block;"></div>
-                        <a href="/" target="_blank"><%=post.createUserNickName%></a></li>
+                        <a href="/articles/user/<%=post.createUserEmail%>" target="_blank"><%=post.createUserNickName%></a></li>
                     <li class="ico-cat"><i class="icon-list-1"></i>
-                        <a href="/search/topic/<%=post.belongTopicId%>"><%=post.belongTopicTitle%></a>
+                        <a href="/articles/topic/<%=post.belongTopicId%>"><%=post.belongTopicTitle%></a>
                     </li>
                     <li class="ico-time"><i class="icon-clock-1"></i> <%=post.createTime%></li>
                     <li class="ico-eye"><i class="icon-eye-1"></i>  <%=post.viewCount%></li>
                     <li class="ico-like"><i class="icon-heart"></i> <%=post.likeCount%></li>
+
+                    <% if(loginUser.isAdmin) {%>
+                    <li class="cp-post-edit">
+                        <a>编辑</a>
+                    </li>
+                    <li class="cp-post-delete">
+                        <a>删除</a>
+                    </li>
+                    <%}%>
+
                 </ul>
             </div>
         </div>

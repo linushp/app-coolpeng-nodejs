@@ -149,6 +149,7 @@ var BlogPostSchema = new Schema({
     lastCommentDate:Date,
     createTime: String,
     createDate: Date,
+    createUserEmail: String,
     createUserNickName: String,
     createUserAvatar:String,
 
