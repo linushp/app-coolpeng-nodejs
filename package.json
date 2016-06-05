@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "install_1":"npm install -g express",
-    "install_2":"npm install -g express-generator",
-    "install_3":"npm install"
+    "install_1": "npm install -g express",
+    "install_2": "npm install -g express-generator",
+    "install_3": "npm install"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -16,15 +16,14 @@
     "express": "~4.13.1",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
-    "mongoose":"*",
-    "socket.io":"*",
+    "mongoose": "*",
+    "socket.io": "*",
     "express-partials": "*",
-    "express-session":"*",
-    "laypage":"*",
-    "async":"1.5.2",
-    "underscore":"*",
-    "jquery":"*",
-
+    "express-session": "*",
+    "laypage": "*",
+    "async": "1.5.2",
+    "underscore": "*",
+    "jquery": "*",
     "gulp": "^3.9.1",
     "gulp-concat": "~2.5.2",
     "gulp-header": "~1.7.1",
@@ -35,7 +34,13 @@
     "gulp-rename": "~1.2.0",
     "gulp-uglify": "~1.1.0",
     "minimatch": "~3.0.0",
-    "brace-expansion":"*"
-
+    "brace-expansion": "*"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.5.2",
+    "gulp-minify-css": "^0.5.1",
+    "gulp-rev": "^7.0.0",
+    "gulp-rev-collector": "^1.0.3"
   }
 }

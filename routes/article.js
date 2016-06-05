@@ -9,6 +9,7 @@ var cpPage = require("./utils/cp-page");
 var cpUtil = require("./utils/cp-util");
 var blogService = require("./utils/blog-service");
 var toJsPostList = cpUtil.toJsPostList;
+var appConfig = require('../app-config');
 
 // GET      /article/view/:id
 function articleView(req, res, next) {
@@ -17,6 +18,13 @@ function articleView(req, res, next) {
     BlogPost.find({_id: id}, function (err, doc) {
         if (doc && doc.length > 0) {
             var post = doc[0];
+            var comments = post.comments || [];
+            for (var i = 0; i < comments.length; i++) {
+                var obj = comments[i];
+                if(!obj.createUserAvatar){
+                    obj.createUserAvatar = appConfig.DEFAULT_AVATAR;
+                }
+            }
             res.renderWithSidebar('blog/post', {title: post.title, post: post});
         } else {
             res.renderWithSidebar('blog/post', {title: "Not Found", post: {title: "Not Found"}});
@@ -37,12 +45,11 @@ function articleCreateGet(req, res, next) {
 
 //POST      /article/create
 function articleCreateSave(req, res, next) {
-    var loginUser = req.session.loginUser;
     if (!cpUtil.isPermissionCreatePost(req)) {
         res.end("no permission");
         return;
     }
-
+    var loginUser = req.session.loginUser;
     var data = req.body;
     if (!data) {
         res.end("content is empty");
@@ -83,6 +90,11 @@ function articleCreateSave(req, res, next) {
 //GET     /article/modify/:id
 function articleModifyGet(req, res, next) {
 
+    if (!cpUtil.isPermissionCreatePost(req)) {
+        res.end("no permission");
+        return;
+    }
+
     var articleId = req.params.id;
 
     async.parallel([
@@ -113,11 +125,12 @@ function articleModifyGet(req, res, next) {
 //POST     /article/modify/:id
 function articleModifySave(req, res, next) {
 
-    var loginUser = req.session.loginUser;
     if (!cpUtil.isPermissionCreatePost(req)) {
         res.end("no permission");
         return;
     }
+
+    var loginUser = req.session.loginUser;
 
     var data = req.body;
     if (!data) {
@@ -166,6 +179,13 @@ function articleModifySave(req, res, next) {
 
 // * GET      /article/delete/:id
 function articleDelete(req, res, next) {
+
+    if (!cpUtil.isPermissionCreatePost(req)) {
+        res.end("no permission");
+        return;
+    }
+
+
     var articleId = req.params.id;
     BlogPost.remove({_id:articleId},function(e, r){
         if (e) {
@@ -185,32 +205,62 @@ function articleCommentGet(req, res, next) {
 
 // POST     /article/comment/create/:postId        创建一个新回复
 function articleCommentCreate(req, res, next) {
+
     var articleId = req.params.postId;
-
-    var id = req.params.postId;
     var loginUser = req.session.loginUser || {};
-    var content = req.body.content;
+    var content = req.body.content ||"";
+    content = content.toString().trim();
 
-    BlogPost.find({_id: id}, function (err, doc) {
+    if(content.length===0){
+        res.end("err_no_reply");//没有填写评论内容
+        return;
+    }
+
+    if(content.length>300){
+        res.end("err_reply_too_long");
+        return;
+    }
+
+    if(!loginUser.isLogin){
+        res.end("err_no_login");//用户没有登录
+        return;
+    }
+
+    var currentTime = new Date().getTime();
+    if(loginUser.articleCommentCreate_lastReplyTime && (currentTime-loginUser.articleCommentCreate_lastReplyTime < 1000*60)){
+        res.end("err_op_too_much");//操作太频繁，要等一分钟
+        return;
+    }
+    loginUser.articleCommentCreate_lastReplyTime = currentTime;
+
+    BlogPost.find({_id: articleId}, function (err, doc) {
 
         if (err || !doc || doc.length === 0) {
-            res.end("没有找到此文章，可能已经被删除了。");
+            res.end("err_no_article");//没有找到此文章，可能已经被删除了。
             return;
         }
 
         var post = doc[0];
         var replyCount = post.replyCount || 0;
+
+        if(replyCount > 50){
+            res.end("err_max_reply");//最多只能有50条评论，评论功能已关闭。
+            return;
+        }
+
+
+
         replyCount++;
 
 
-        BlogPost.update({_id: id}, {"$set": {replyCount: replyCount}}, function (err, d) {
+        BlogPost.update({_id: articleId}, {"$set": {replyCount: replyCount}}, function (err, d) {
 
             if (err) {
-                res.end("更新帖子数据失败");
+                res.end("err_update");
                 return;
             }
 
-            BlogPost.addComment(id, {
+            var comment = {
                 title: "",
                 content: content,
                 createDate: new Date(),
@@ -219,22 +269,34 @@ function articleCommentCreate(req, res, next) {
                 createUserAvatar: loginUser.avatar,
                 createUserRole:loginUser.role,
                 floorNumber: replyCount
-            }, function (err, r) {
+            };
+
+            BlogPost.addComment(articleId,comment, function (err, r) {
                 if (err) {
                     res.end(err.toString());
                 } else {
-                    res.end("ok");
+
+                    if(!comment.createUserAvatar){
+                        comment.createUserAvatar = appConfig.DEFAULT_AVATAR;
+                    }
+
+                    res.render("blog/comments-item",{
+                        status:"ok",
+                        comment:comment,
+                        layout:false
+                    });
                 }
             });
         });
     });
 }
 
-// GET      /article/comment/delete/:postId/:commentId  删除一个新回复
+// GET      /article/comment/delete/:postId/:floorNumber  删除一个新回复
 function articleCommentDelete(req, res, next) {
     var articleId = req.params.postId;
-    var commentId = req.params.commentId;
+    var floorNumber = req.params.floorNumber;
     //TODO
+
 }
 
 router.get('/view/:id',articleView);
@@ -253,7 +315,7 @@ router.get('/comment/page/:postId',articleCommentGet);
 
 router.post('/comment/create/:postId',articleCommentCreate);
 
-router.get('/comment/delete/:postId/:commentId',articleCommentDelete);
+router.get('/comment/delete/:postId/:floorNumber',articleCommentDelete);
 
 module.exports = router;
 
@@ -268,6 +330,6 @@ module.exports = router;
  *
  * GET     /article/comment/page/:postId?pn=0  分页查看回复
  * POST     /article/comment/create/:postId        创建一个新回复
- * GET      /article/comment/delete/:postId/:commentId  删除一个新回复
+ * GET      /article/comment/delete/:postId/:floorNumber  删除一个新回复
  *
  */

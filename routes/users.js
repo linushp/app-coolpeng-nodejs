@@ -17,6 +17,7 @@ router.post('/login', function(req, res, next) {
        nickname:"栾海鹏",
        username:"luanhaipeng",
        isLogin:true,
+       isAdmin:true,
        role:"admin",
        avatar:"/public/static/images/avatar1.png",
        email:"910010653@qq.com"
@@ -27,6 +28,7 @@ router.post('/login', function(req, res, next) {
       nickname:body.nickname,
       username:body.nickname,
       isLogin:true,
+      isAdmin:false,
       role:"guest",
       email:body.email
     };

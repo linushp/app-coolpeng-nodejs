@@ -36,7 +36,13 @@ function isArray(obj) {
 }
 
 function getLayout(req) {
-    return isXHR(req) ? false : "layout";
+    if(isXHR(req)) {
+        return false;
+    }else if (appConfig._ENVIRONMENT==="development"){
+        return "layout";
+    }else {
+        return "release/layout";
+    }
 }
 
 function isXHR(req) {
@@ -109,75 +115,15 @@ var templateCache = {};
 
 var createSmartRender = function (req, res, next) {
     return function (templateName, data) {
-
-        var names = parseTemplateName(templateName);
-
-
-        if (isXHR(req) && !isAjaxServerRender(req)) {
-            var ajaxTemplate = names.ajaxTemplate;
-            if (isNeedTemplate(req)) {
-
-                var template = templateCache[templateName];
-
-                if (template) {
-                    res.send({
-                        templateName: ajaxTemplate,
-                        template: template,
-                        data: data
-                    });
-                    res.end();
-                } else {
-                    var viewsPath = path.join(__dirname, '../../views');
-                    var filePath = path.join(viewsPath, ajaxTemplate);
-                    if (!/.ejs$/.test(filePath)) {
-                        filePath += ".ejs";
-                    }
-                    fs.readFile(filePath, "utf-8", function (err, file) {
-                        if (err) {
-                            res.end("error");
-                        }
-                        file = (file.toString());
-
-                        file = file.replace(/\s+|(\r\n)/g, " ");
-
-                        //开发环境没有缓存
-                        if (appConfig._ENVIRONMENT !== "development") {
-                            templateCache[ajaxTemplate] = file;
-                        }
-
-                        res.send({
-                            templateName: ajaxTemplate,
-                            template: file,
-                            data: data
-                        });
-                        res.end();
-                    });
-                }
-
-            }
-            else {
-                res.send({
-                    templateName: ajaxTemplate,
-                    template: null,
-                    data: data
-                });
-                res.end();
-            }
-
-        } else {
-
-            var renderTemplate = names.renderTemplate;
-
-            //1、不是ajax请求
-            //2、前台要求服务端渲染的话
-            var d = _.extend({
-                loginUser: getLoginUserFromSession(req, res),
-                title: "coolpeng",
-                _ENVIRONMENT: appConfig._ENVIRONMENT,
-                layout: getLayout(req)
-            }, data);
-            res.render(renderTemplate, d);
-        }
+        //1、不是ajax请求
+        //2、前台要求服务端渲染的话
+        var d = _.extend({
+            loginUser: getLoginUserFromSession(req, res),
+            title: "coolpeng",
+            _ENVIRONMENT: appConfig._ENVIRONMENT,
+            layout: getLayout(req)
+        }, data);
+        res.render(templateName, d);
     }
 };
 
@@ -239,13 +185,18 @@ var createRenderWithSidebar = function (req, res, next) {
 
 
 
+
+
+
+
 var sidebarMemCachedTemplate = null;
 var sidebarMemCachedTime = null;
 var createRenderWithSidebarMemCache = function (req, res, next) {
     return function (templateName, data) {
 
+
         //一小时更新一下缓存
-        if (!sidebarMemCachedTime || (new Date().getTime() - sidebarMemCachedTime > (1000 * 60 * 60))) {
+        if (!sidebarMemCachedTime || (new Date().getTime() - sidebarMemCachedTime > (1000 * 60 * 60)) || appConfig._ENVIRONMENT==="development") {
 
             async.parallel([
                     function (callback) {
@@ -277,7 +228,7 @@ var createRenderWithSidebarMemCache = function (req, res, next) {
 
 function smartParseAndRender() {
     return function smartParseAndRender(req, res, next) {
-        //res.smartRender = createSmartRender(req, res, next);
+        res.smartRender = createSmartRender(req, res, next);
         //res.renderWithSidebar = createRenderWithSidebar(req, res, next);
         res.renderWithSidebar = createRenderWithSidebarMemCache(req, res, next);
         next();

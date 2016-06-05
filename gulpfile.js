@@ -13,41 +13,37 @@
 
 
 var gulp = require('gulp'),
-    minifycss = require('gulp-minify-css'),
+    minifyCss = require('gulp-minify-css'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     del = require('del');
 
+var rev = require('gulp-rev');
+//- 对文件名加MD5后缀
 
+var revCollector = require('gulp-rev-collector');
+//- 路径替换
 
 
 //压缩CSS
 gulp.task('minifyCommonCss', function () {
 
     var cssArray=[
-        "./common/css/cm_button.css",
-        "./common/css/cm_step.css",
-        "./common/css/cm_table.css",
-        "./common/css/cm_window.css",
-        "./common/css/cm_mask.css",
-        "./common/css/cm_loading.css",
-        "./common/css/cm_upload.css",
-        "./common/css/cm_layout.css",
-        "./common/css/cm_validator.css",
-        "./common/css/cm_interceptor.css",
-        "./common/css/cm_placeholder.css",
-        "./common/css/cm_fieldSelect.css",
-        "./common/css/cm_editSelect.css",
-        "./common/css/cm_selectArea.css",
-        "./common/css/cm_header.css"
+        "./public/lib/layer/skin/layer.css",
+        "./public/src/theme/style.css",
+        "./public/src/theme/fontello.css"
     ];
 
     return gulp.src(cssArray).pipe(concat('coolpeng.css'))
         .pipe(gulp.dest('./public/release/css/'))
         .pipe(rename({suffix: '.min'}))
-        .pipe(minifycss())
-        .pipe(gulp.dest('./public/release/css/'));
+        .pipe(minifyCss())
+        .pipe(gulp.dest('./public/release/css/'))
+        .pipe(rev())
+        .pipe(gulp.dest('./public/release/css/'))
+        .pipe(rev.manifest("minifyCommonCss.json"))
+        .pipe(gulp.dest('./public/release/rev'));
 });
 
 
@@ -58,7 +54,9 @@ gulp.task('minifyCommonJS', function() {
     var jsArray = [
         './bower_components/ejs/ejs.min.js',
         './public/lib/layer/layer.js',
+        "./public/src/theme/theme.js",
         './public/src/js/ajax-link.js',
+        './public/src/js/blog-i18n.js',
         './public/src/js/blog-index.js'
     ];
 
@@ -66,7 +64,27 @@ gulp.task('minifyCommonJS', function() {
         .pipe(gulp.dest('./public/release/js'))
         .pipe(rename({suffix: '.min'}))
         .pipe(uglify())
-        .pipe(gulp.dest('./public/release/js'));
+        .pipe(gulp.dest('./public/release/js'))
+        .pipe(rev())
+        .pipe(gulp.dest('./public/release/js'))
+        .pipe(rev.manifest("minifyCommonJS.json"))
+        .pipe(gulp.dest('./public/release/rev'));
+});
+
+
+gulp.task('revEjsTemplate', function() {
+    gulp.src(['./public/release/rev/*.json', './views/layout.ejs'])
+        .pipe(revCollector())
+        .pipe(gulp.dest('./views/release'));
+});
+
+
+gulp.task('copyTheme', function() {
+    gulp.src(['./public/src/theme/font/*'])
+        .pipe(gulp.dest('./public/release/css/font/'));
+
+    gulp.src(['./public/src/theme/img/*'])
+        .pipe(gulp.dest('./public/release/css/img/'));
 });
 
 
@@ -74,4 +92,4 @@ gulp.task('minifyCommonJS', function() {
 /**
  * 执行所有压缩任务，任务并行执行。
  */
-gulp.task('build', ['minifyCommonJS', 'minifyCommonCss']);
+gulp.task('default', ['minifyCommonJS', 'minifyCommonCss',"revEjsTemplate","copyTheme"]);

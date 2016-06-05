@@ -469,7 +469,30 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
         e.run();//f.use("skin/layer.css")
     }()
 }(window);
+//tip
+jQuery(document).ready(function ($) {
+    $("#tooltip-weixin,#tooltip-qq,#tooltip-f-qq,#tooltip-f-weixin,#tooltip-mail-2").click(
+        function () {
+            var e = $(this);
+            setTimeout(function () {
+                    e.parents(".dropdown-menu-part").find(".dropdown-menu").toggleClass("visible");
+                },
+                200);
+        });
+
+    $('.m-search').on('click', function () {
+        $('.search-box').slideToggle(200, function () {
+            if ($('.m-search').css('display') == 'block') {
+                $('.search-box .form-search').focus()
+            }
+        })
+    });
+
+
+
+});
 (function (window) {
+
 
     window.iniAjaxLink = function(config){
 
@@ -484,17 +507,10 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
 
             var templateCache = {};
 
-            $(document).on("click", ".ajax-link", function (e) {
+            var ajaxGoTo = function(ajaxTarget,href,ajaxRender,$eventSource){
 
-                var $this = $(this);
-                var ajaxTarget = $this.attr("ajax-target");
-                if (!ajaxTarget || ajaxTarget.length === 0) {
-                    return;
-                }
-
-                e.preventDefault();
-                e.stopPropagation();
-
+                //默认服务端渲染
+                var isAjaxSSR = (ajaxRender !=="client");
                 var $ajaxTarget = $(ajaxTarget);
 
                 if (!ajaxHandler) {
@@ -507,8 +523,6 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
                 }
 
 
-                var $link = $(this);
-                var href = $link.attr("href");
 
                 var loadingTimeout = window.setTimeout(function(){
                     $ajaxTarget.html("loading...");
@@ -521,32 +535,39 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
                     data = data||{};
 
                     $ajaxTarget.html(html);
+
                     var state = {
                         url: href,
-                        title: data.title || $link.html(),
+                        title: data.title || document.title,
                         html: html,
                         ajaxTarget: ajaxTarget
                     };
 
                     window.history.pushState(state, null, href);
+
                 };
 
-                 ajaxHandler = $.ajax({
+                ajaxHandler = $.ajax({
                     url:href,
-                    dataType: "json",
+                    dataType: (isAjaxSSR?"html":"json"),
                     type:"get",
                     timeout : 10000,
                     success: function (mm) {
-                        var templateName = mm.templateName;
-                        var template = mm.template;
-                        if(template){
-                            templateCache[templateName] = template;
-                        }else {
-                            template = templateCache[templateName];
+                        if(isAjaxSSR){
+                            ajaxHtmlSuccess(mm);
                         }
-                        var data = mm.data ||{};
-                        var html = ejs.render(template, data);
-                        ajaxHtmlSuccess(html,data);
+                        else {
+                            var templateName = mm.templateName;
+                            var template = mm.template;
+                            if(template){
+                                templateCache[templateName] = template;
+                            }else {
+                                template = templateCache[templateName];
+                            }
+                            var data = mm.data ||{};
+                            var html = ejs.render(template, data);
+                            ajaxHtmlSuccess(html,data);
+                        }
                     },
                     complete : function(XMLHttpRequest,status){
                         if(status=='timeout'){
@@ -554,24 +575,45 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
                         }
                     },
                     beforeSend: function(XMLHttpRequest) {
-                        var templateName = config.getTemplateName(href,$link);
-                        var template = null;
-                        if(templateName){
-                            template = templateCache[templateName];
+                        if(!isAjaxSSR){
+                            var templateName = config.getTemplateName(href,$eventSource);
+                            var template = null;
+                            if(templateName){
+                                template = templateCache[templateName];
+                            }
+                            if(template){
+                                XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "false");
+                            }else{
+                                XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "true");
+                            }
                         }
-                        if(template){
-                            XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "false");
-                        }else{
-                            XMLHttpRequest.setRequestHeader("CP_NEED_TEMPLATE", "true");
-                        }
+                        XMLHttpRequest.setRequestHeader("CP_TEMPLATE_RENDER", ajaxRender);
                     }
                 });
 
+            };
+
+            window.ajaxGoTo = ajaxGoTo;
+
+            $(document).on("click", ".ajax-link", function (e) {
+
+                $(window).scrollTop(0);
 
 
-                //ajaxHandler = $.get(href, function (html) {
-                //    ajaxHtmlSuccess(html);
-                //}, "html");
+                var $link = $(this);
+                var ajaxTarget = $link.attr("ajax-target");
+                var href = $link.attr("href");
+                //标记位，是否启用服务端渲染
+                var ajaxRender = $link.attr("ajax-render") ||"";
+
+                if (!ajaxTarget || ajaxTarget.length === 0) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                ajaxGoTo(ajaxTarget,href,ajaxRender,$link);
 
             });
 
@@ -596,16 +638,41 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
 
 
 })(window);
+(function(window){
+
+    var blogErrI18N = {
+        err_no_article:"没有找到此文章，可能已经被删除了。",
+        err_max_reply:"最多只能有50条评论，评论功能已关闭。",
+        err_update:"更新失败",
+        err_no_reply:"没有填写评论内容",
+        err_no_login:"用户没有登录",
+        err_reply_too_long:"您输入的评论太长了，最多只能评论300字！",
+        err_op_too_much:"您操作太频繁了，休息一分钟吧。"
+    };
+
+
+    window.getBlogErrI18N = function(text){
+        if(!text || text.length===0){
+            return null;
+        }
+        var reg = /^err/ ;
+        if(text.length < 50 && reg.test(text)){
+            return blogErrI18N[text];
+        }
+        return null;
+    };
+
+})(window);
 jQuery(document).ready(function ($) {
 
     //初始化ajaxLink
     iniAjaxLink({
-        firstTarget:".main-body",
-        getTemplateName:function(href){
-            if(href.indexOf("/blog/post/")>=0){
-                return "blog/post";
+        firstTarget: ".main-body",
+        getTemplateName: function (href) {
+            if (href.indexOf("/blog/post/") >= 0) {
+                return "blog/post-content";
             }
-            if(href.indexOf("/blog")>=0){
+            if (href.indexOf("/blog") >= 0) {
                 return "blog/index";
             }
             return null;
@@ -613,24 +680,68 @@ jQuery(document).ready(function ($) {
     });
 
 
+    //滚动
+    $(document).on('scroll', function () {
 
+        var st = $(this).scrollTop(),
+            nav_point = 90,
+            $nav = $('#header');
 
-    //点击新建文章按钮
-    $(document).on("click", ".create-post-submit", function () {
-        var m = $(".create-post");
-        var post = {
-            title: m.find("input[name=title]").val(),
-            content: m.find("[name=content]").val()
-        };
-        $(".create-post-msg").html("loading....");
-        $.post("/blog/post", post, function (d) {
-            $(".create-post-msg").html(d);
-        });
+        if (st >= nav_point) {
+            $nav.addClass('headfixed');
+        }
+        else {
+            $nav.removeClass('headfixed');
+        }
+
     });
 
 
+    function onClick(selector, callback) {
+        $(document).on("click", selector, callback);
+    }
+
+
+    /**
+     * 新建帖子按钮
+     */
+    onClick(".create-post-submit", function () {
+
+        var editor = UE.getEditor("create-ueditor");
+        var content = editor.getContent();
+        var contentSummary = editor.getContentTxt();
+        if (contentSummary.length > 400) {
+            contentSummary = contentSummary.slice(0, 400);
+        }
+        var $box = $("#create-post-box");
+        var title = $box.find("input[name=title]").val();
+        var belongTopicId = $box.find("select[name=belongTopicId]").val();
+        var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
+        var tagString = $box.find("input[name=tagString]").val();
+
+        $.post("/article/create", {
+            title: title,
+            content: content,
+            contentSummary: contentSummary,
+            tagString: tagString,
+            belongTopicId: belongTopicId,
+            belongTopicTitle: belongTopicTitle
+        }, function (res) {
+            if (res === "ok") {
+                layer.msg("&nbsp;&nbsp;&nbsp;新建成功&nbsp;&nbsp;&nbsp;", {
+                    time: 0 ,//不自动关闭
+                    btn: ['OK'],
+                    yes: function () {
+                        window.location.href = "/articles/";
+                    }
+                });
+            }
+        }, "text");
+
+    });
+
     //点击文章的回复按钮
-    $(document).on("click", ".create-post-comment-submit", function () {
+    onClick(".create-post-comment-submit", function () {
         var m = $(".create-post-comment");
         var id = m.data("id");
         var comment = {
@@ -638,9 +749,88 @@ jQuery(document).ready(function ($) {
             content: m.find("[name=content]").val()
         };
         $(".create-post-comment-msg").html("loading....");
-        $.post("/blog/post-comment/" + id, comment, function (d) {
-            $(".create-post-comment-msg").html(d);
+        $.post("/article/comment/create/" + id, comment, function (d) {
+            $(".create-post-comment-msg").html("");
+
+            var errorText = getBlogErrI18N(d);
+            if (errorText){
+                layer.msg(errorText);
+            }else {
+                layer.msg("回复成功");
+                $(".commentlist").append(d);
+                m.find("[name=content]").val("")
+            }
+
+        },"html");
+    });
+
+
+    var doArticleSearch = function (e, $form) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var keyword = $form.find("input[type=text]").val();
+        keyword = encodeURIComponent(keyword);
+        var href = "/articles/search/" + keyword;
+        //ajaxTarget,href,ajaxRender,$eventSource
+        ajaxGoTo(".main-body", href, "server", $form);
+
+        return false;
+    };
+
+    $(document).on('submit', 'form.sidebar-search', function (e) {
+        var $this = $(this);
+        doArticleSearch(e, $this);
+        return false;
+    });
+
+
+    //点击用户退出按钮
+    onClick(".cp-sys-logout", function () {
+        $.get("/users/logout", function (d) {
+            layer.alert("退出成功", function () {
+                window.location.reload();
+            });
         });
     });
+
+
+    //评论页面点击用户登录按钮
+    onClick(".cp-sys-login", function () {
+
+        $.get("/public/static/template/pop-login.html",function(template){
+
+            layer.open({
+                type: 1,
+                title: "登录",
+                area: ['400px', '400px'],
+                btn: ['确定', "取消"],
+                content: template,
+                yes: function (index, $content) { //此处用于演示
+                    var nickname = $content.find("input[name='nickname']").val();
+                    var email = $content.find("input[name='email']").val();
+                    if (!nickname || nickname.length === 0) {
+                        layer.msg('昵称不能为空');
+                        return;
+                    }
+                    if (!email || email.length === 0) {
+                        layer.msg('请填写邮箱');
+                        return;
+                    }
+                    $.post("/users/login", {
+                        nickname: nickname,
+                        email: email
+                    }, function (d) {
+                        layer.alert("登录成功", function () {
+                            window.location.reload();
+                        });
+                    });
+                }
+            });
+
+        },"html");
+
+    });
+
 
 });

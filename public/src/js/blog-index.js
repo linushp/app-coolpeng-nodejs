@@ -2,12 +2,12 @@ jQuery(document).ready(function ($) {
 
     //初始化ajaxLink
     iniAjaxLink({
-        firstTarget:".main-body",
-        getTemplateName:function(href){
-            if(href.indexOf("/blog/post/")>=0){
+        firstTarget: ".main-body",
+        getTemplateName: function (href) {
+            if (href.indexOf("/blog/post/") >= 0) {
                 return "blog/post-content";
             }
-            if(href.indexOf("/blog")>=0){
+            if (href.indexOf("/blog") >= 0) {
                 return "blog/index";
             }
             return null;
@@ -16,37 +16,37 @@ jQuery(document).ready(function ($) {
 
 
     //滚动
-    $(document).on('scroll', function(){
+    $(document).on('scroll', function () {
 
         var st = $(this).scrollTop(),
             nav_point = 90,
             $nav = $('#header');
 
-        if( st >= nav_point ){
+        if (st >= nav_point) {
             $nav.addClass('headfixed');
         }
-        else{
+        else {
             $nav.removeClass('headfixed');
         }
 
     });
 
 
-    function onClick(selector,callback){
-        $(document).on("click",selector,callback);
+    function onClick(selector, callback) {
+        $(document).on("click", selector, callback);
     }
 
 
     /**
      * 新建帖子按钮
      */
-    onClick(".create-post-submit",function(){
+    onClick(".create-post-submit", function () {
 
         var editor = UE.getEditor("create-ueditor");
         var content = editor.getContent();
         var contentSummary = editor.getContentTxt();
-        if(contentSummary.length>400){
-            contentSummary = contentSummary.slice(0,400);
+        if (contentSummary.length > 400) {
+            contentSummary = contentSummary.slice(0, 400);
         }
         var $box = $("#create-post-box");
         var title = $box.find("input[name=title]").val();
@@ -54,23 +54,29 @@ jQuery(document).ready(function ($) {
         var belongTopicTitle = $box.find("select[name=belongTopicId] option:selected").text();
         var tagString = $box.find("input[name=tagString]").val();
 
-        $.post("/article/create",{
-            title:title,
-            content:content,
-            contentSummary:contentSummary,
-            tagString:tagString,
-            belongTopicId:belongTopicId,
-            belongTopicTitle:belongTopicTitle
-        },function(res){
-            if(res==="ok"){
-                layer.msg("新建成功")
+        $.post("/article/create", {
+            title: title,
+            content: content,
+            contentSummary: contentSummary,
+            tagString: tagString,
+            belongTopicId: belongTopicId,
+            belongTopicTitle: belongTopicTitle
+        }, function (res) {
+            if (res === "ok") {
+                layer.msg("&nbsp;&nbsp;&nbsp;新建成功&nbsp;&nbsp;&nbsp;", {
+                    time: 0 ,//不自动关闭
+                    btn: ['OK'],
+                    yes: function () {
+                        window.location.href = "/articles/";
+                    }
+                });
             }
-        },"text");
+        }, "text");
 
     });
 
     //点击文章的回复按钮
-    onClick( ".create-post-comment-submit", function () {
+    onClick(".create-post-comment-submit", function () {
         var m = $(".create-post-comment");
         var id = m.data("id");
         var comment = {
@@ -79,105 +85,87 @@ jQuery(document).ready(function ($) {
         };
         $(".create-post-comment-msg").html("loading....");
         $.post("/article/comment/create/" + id, comment, function (d) {
-            $(".create-post-comment-msg").html(d);
-        });
+            $(".create-post-comment-msg").html("");
+
+            var errorText = getBlogErrI18N(d);
+            if (errorText){
+                layer.msg(errorText);
+            }else {
+                layer.msg("回复成功");
+                $(".commentlist").append(d);
+                m.find("[name=content]").val("")
+            }
+
+        },"html");
     });
 
 
-
-    var doArticleSearch = function(e,$form){
+    var doArticleSearch = function (e, $form) {
         e.preventDefault();
         e.stopPropagation();
 
         var keyword = $form.find("input[type=text]").val();
         keyword = encodeURIComponent(keyword);
-        var href="/articles/search/" + keyword;
+        var href = "/articles/search/" + keyword;
         //ajaxTarget,href,ajaxRender,$eventSource
-        ajaxGoTo(".main-body",href,"server",$form);
+        ajaxGoTo(".main-body", href, "server", $form);
 
         return false;
     };
 
-    $(document).on('submit','form.sidebar-search',function(e){
+    $(document).on('submit', 'form.sidebar-search', function (e) {
         var $this = $(this);
-        doArticleSearch(e,$this);
+        doArticleSearch(e, $this);
         return false;
     });
 
 
-
-
     //点击用户退出按钮
-    onClick( ".cp-sys-logout", function () {
+    onClick(".cp-sys-logout", function () {
         $.get("/users/logout", function (d) {
-            layer.alert("退出成功",function(){
+            layer.alert("退出成功", function () {
                 window.location.reload();
             });
         });
     });
 
 
-
     //评论页面点击用户登录按钮
-    onClick( ".cp-sys-login", function () {
+    onClick(".cp-sys-login", function () {
 
-        //iframe窗
-        layer.open({
-            type: 1,
-            title: "登录",
-            area: ['340px', '215px'],
-            btn: ['确定', "取消"],
-            content: '' +
-            '<div style="width: 240px;margin: 10px auto">' +
-            '   <table>' +
-            '       <tr style="height: 50px;">' +
-            '           <td>昵称：</td>' +
-            '           <td><input type="text" class="cp-input" name="nickname"></td>' +
-            '       </tr>' +
-            '       <tr style="height: 50px;">' +
-            '           <td>邮箱：</td>' +
-            '           <td><input type="text" class="cp-input" name="email"></td>' +
-            '       </tr>' +
-            '   </table>' +
-            '</div>',
-            yes: function(index, $content){ //此处用于演示
-                var nickname = $content.find("input[name='nickname']").val();
-                var email = $content.find("input[name='email']").val();
-                if(!nickname || nickname.length===0){
-                    layer.msg('昵称不能为空');
-                    return;
-                }
-                if(!email || email.length===0){
-                    layer.msg('请填写邮箱');
-                    return;
-                }
-                $.post("/users/login",{
-                    nickname:nickname,
-                    email:email
-                }, function (d) {
-                    layer.alert("登录成功",function(){
-                        window.location.reload();
+        $.get("/public/static/template/pop-login.html",function(template){
+
+            layer.open({
+                type: 1,
+                title: "登录",
+                area: ['400px', '400px'],
+                btn: ['确定', "取消"],
+                content: template,
+                yes: function (index, $content) { //此处用于演示
+                    var nickname = $content.find("input[name='nickname']").val();
+                    var email = $content.find("input[name='email']").val();
+                    if (!nickname || nickname.length === 0) {
+                        layer.msg('昵称不能为空');
+                        return;
+                    }
+                    if (!email || email.length === 0) {
+                        layer.msg('请填写邮箱');
+                        return;
+                    }
+                    $.post("/users/login", {
+                        nickname: nickname,
+                        email: email
+                    }, function (d) {
+                        layer.alert("登录成功", function () {
+                            window.location.reload();
+                        });
                     });
-                });
-            }
-        });
+                }
+            });
 
+        },"html");
 
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 });

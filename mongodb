@@ -1,0 +1,38 @@
+# cp ssh mongodb
+# vim mongodb
+# cat mongodb
+
+#!/bin/bash
+#
+# mongod        Start up the MongoDB server daemon
+#
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+CMD=/root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod
+DBPATH=/root/coolpeng-node-db
+LOGPATH=/root/coolpeng-mongolog
+
+start()
+{
+    $CMD --dbpath=$DBPATH --logpath=$LOGPATH --fork
+    echo "MongoDB is running background..."
+}
+
+stop()
+{
+    pkill mongod
+    echo "MongoDB is stopped."
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop}"
+esac

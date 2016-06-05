@@ -13,3 +13,25 @@
 7、设置生产环境：
     set NODE_ENV=production
     生产环境下，模板默认有缓存。
+
+8、node后台运行
+    npm install -g forever
+    forever start app.js
+    forever stop app.js
+    forever start -l forever.log -o out.log -e err.log app.js   #输出日志和错误
+
+
+#Nginx
+/usr/local/nginx/conf
+/usr/local/nginx/sbin/nginx -s reload
+
+#启动node
+/usr/local/bin/node   /root/coolpeng-node/app.js
+/usr/local/bin/npm
+
+#启动mongodb
+/root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod --dbpath /root/coolpeng-node-db
+ nohup /root/mongodb-linux-x86_64-suse12-3.2.6/bin/mongod --dbpath /root/coolpeng-node-db  &
+
+#安装nodejs
+sudo tar --strip-components 1 -xzvf node-v* -C /usr/local

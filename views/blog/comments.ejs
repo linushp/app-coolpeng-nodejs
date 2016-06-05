@@ -2,98 +2,21 @@
     <div id="comments" class="clearfix">
 
         <div class="comments-box box-shadow">
-            <h3 class="comments-title">全部评论：<span class="comments-num">134条</span></h3>
-            <div id="loading-comments"><span><i class="fa fa-spinner fa-spin"></i> 加载中...</span></div>
+            <%var comments = post.comments||[];%>
+            <h3 class="comments-title">全部评论：<span class="comments-num"><%-comments.length%>条</span></h3>
             <ol class="commentlist">
-
-                <%
-                var comments = post.comments||[];
-                for(var i = 0;i < comments.length;i++){
-                var comment = comments[i];
-                %>
-
-                <li class="comment byuser comment-author-stryc even thread-even depth-1" id="li-comment-3140">
-                    <div id="comment-3140">
-
-                        <div class="comment-avatar">
-                            <img
-                                src="<%=comment.createUserAvatar%>"
-                                class="avatar avatar-100" height="100" width="100"></div>
-                        <div class="comment-body">
-                            <div class="comment_author">
-                                <span class="name"><a class="url" href="/i?a=" rel="external nofollow" target="_blank"><%=comment.createUserNickName%></a></span>
-                                <em><%=comment.createTime%></em>
-                                <div class="comment_floor"><%=comment.floorNumber%></div>
-                            </div>
-                            <div class="comment-text">
-                                <%=comment.content%>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ul class="children">
-
-                        <%var subComments = comment.comments||[];%>
-                        <%subComments.forEach(function(subComment,i){%>
-
-                        <li class="comment byuser comment-author-suxing bypostauthor odd alt depth-2"
-                            id="li-comment-3142">
-                            <div id="comment-3142">
-
-                                <div class="comment-avatar"><img
-                                        src="<%=subComment.createUserAvatar%>"
-                                        class="avatar avatar-100" height="100" width="100"></div>
-                                <div class="comment-body">
-                                    <div class="comment_author">
-                                        <span class="name">
-                                            <a class="url" href="/" rel="external nofollow" target="_blank">
-                                                <%=subComment.createUserNickName%>
-                                            </a>
-                                        </span>
-
-                                        <%if(subComment.createUserRole==="admin"){ %>
-                                            <span class="comment_admin">站长</span>
-                                        <%}%>
-
-                                        <em> <%=subComment.createTime%></em>
-                                        <div class="comment_floor"></div>
-                                    </div>
-                                    <div class="comment-text">
-                                        <p><%=subComment.content%></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-
-                        <%});%>
-
-                    </ul>
-                </li>
-
-
-                <%}%>
-
+                <% comments.forEach(function(comment,i){%>
+                        <% include comments-item %>
+                <%});%>
             </ol>
+            <div class="create-post-comment-msg"></div>
 
-
-            <div id="comments-navi">
-                <a class="prev page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-8#comments"><i
-                        class="fa fa-angle-left"></i>
-                </a>
-                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-1#comments">1</a>
-                <span class="page-numbers dots">…</span>
-                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-7#comments">7</a>
-                <a class="page-numbers" href="http://www.suxing.me/interest/890.html/comment-page-8#comments">8</a>
-                <span class="page-numbers current">9</span>
-            </div>
-
-            <% include comment-create %>
-
-
+            <%if(comments.length<50){%>
+                <% include comment-create %>
+            <%}else{%>
+                <div>最多只能有50条评论，评论功能已关闭。</div>
+            <%}%>
         </div>
-
-
-
 
     </div>
 </div>

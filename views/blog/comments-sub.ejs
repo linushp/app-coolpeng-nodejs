@@ -1,0 +1,29 @@
+
+<li class="comment byuser comment-author-suxing bypostauthor odd alt depth-2"
+    id="li-comment-3142">
+    <div id="comment-3142">
+
+        <div class="comment-avatar"><img
+                src="<%=subComment.createUserAvatar%>"
+                class="avatar avatar-100" height="100" width="100"></div>
+        <div class="comment-body">
+            <div class="comment_author">
+                                        <span class="name">
+                                            <a class="url" href="/" rel="external nofollow" target="_blank">
+                                                <%=subComment.createUserNickName%>
+                                            </a>
+                                        </span>
+
+                <%if(subComment.createUserRole==="admin"){ %>
+                <span class="comment_admin">站长</span>
+                <%}%>
+
+                <em> <%=subComment.createTime%></em>
+                <div class="comment_floor"></div>
+            </div>
+            <div class="comment-text">
+                <p><%=subComment.content%></p>
+            </div>
+        </div>
+    </div>
+</li>
