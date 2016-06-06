@@ -945,7 +945,7 @@ nav .navbar-form{margin-top:0;margin-bottom:0;border:none;box-shadow:none}
 span.link{cursor: pointer;}
 .cp-sys-login,.cp-sys-logout{cursor: pointer}
 .admin-operation{
-    background-color: #808080;
+    background-color: white;
     color: #FFFFFF;
     border-bottom:3px solid #FFBB50;
     width: 100%;
