@@ -975,6 +975,51 @@ span.link{cursor: pointer;}
     height: 35px;
     width: 200px;
 }
+
+
+.post-detail .post-content *{
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    white-space: normal !important;;
+}
+
+.post-detail .post-content div *{
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    white-space: normal !important;;
+}
+
+.post-detail .post-content p *{
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    white-space: normal !important;;
+}
+
+.post-detail .post-content div p *{
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    white-space: normal !important;;
+}
+
+.cp-pagination span,.cp-pagination a.cp-page-link {
+    display: inline-block;
+    /*width: 30px;*/
+    padding: 0 10px;
+    line-height: 30px;
+    text-align: center;
+    margin-right: 5px;
+    background: #FFFFFF;
+}
+.cp-pagination span{
+    font-weight: bold;
+}
+.cp-pagination a.cp-page-link {
+    cursor: pointer;
+    border: 1px solid #e1e2e3;
+}
+.cp-pagination a.cp-page-link:hover{
+    border: 1px solid #38f;
+}
 @font-face {
   font-family: 'fontello';
   src: url('./font/fontello.eot');

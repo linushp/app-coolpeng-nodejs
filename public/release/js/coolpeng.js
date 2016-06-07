@@ -913,4 +913,18 @@ jQuery(document).ready(function ($) {
         window.location.href = "/article/modify/"+postId;
     });
 
+
+
+    //点击帖子首页的分页按钮
+    onClick("#blogListPageString .cp-page-link",function(e){
+        $(window).scrollTop(0);
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this);
+        var pn = $this.attr("pn");
+        var href = window.location.pathname+"?pn=" + pn;
+        ajaxGoTo(".main-body", href, "server", $this);
+    });
+
 });
