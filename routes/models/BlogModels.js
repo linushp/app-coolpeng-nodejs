@@ -162,6 +162,7 @@ var BlogPostSchema = new Schema({
     replyCount:Number,
     likeCount:Number,
     tags:[String],
+    tagString:String,
     belongTopicId:String,
     belongTopicTitle:String,
     isRecommend:Boolean,//是否被推荐

@@ -1,5 +1,6 @@
 <div class="sidebar-box">
 
+
     <div class="widget suxingme_maillist">
         <div class="widget_box"><h3>文章查找</h3>
             <form class="sidebar-search">
@@ -8,6 +9,18 @@
             </form>
         </div>
     </div>
+
+
+    <div class="widget suxingme_maillist">
+        <div class="widget_box"><h3>文章分类</h3>
+            <ul style="line-height: 30px">
+                <%sidebar.topicList.forEach(function(topic,i){%>
+                <li><a href="/articles/topic/<%=topic.topicId%>" class="ajax-link" ajax-target=".main-body" ajax-render="server"><%=topic.title%></a></li>
+                <%});%>
+            </ul>
+        </div>
+    </div>
+
     <div class="widget widget_suxingme_cjtz affix-top" style="top: 0px;">
         <div class="widget_box">
             <div class="widget_cjtz">

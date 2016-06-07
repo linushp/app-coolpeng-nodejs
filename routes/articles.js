@@ -21,14 +21,13 @@ var cpUtil = require("./utils/cp-util");
 var blogService = require("./utils/blog-service");
 var appConfig = require('../app-config');
 
-function articlesIndex(req, res, next) {
 
+function doArticlesSearch(req, res, condition){
     var pageNumber = parseInt(req.query.pn || "1", 10);
     if (pageNumber < 1) {
         pageNumber = 1;
     }
     var pageSize = 20;
-    var condition = {};
 
     blogService.getBlogList(condition,pageNumber,pageSize,function(data){
         res.renderWithSidebar('blog/index', _.extend({
@@ -37,33 +36,39 @@ function articlesIndex(req, res, next) {
     });
 }
 
+
+function articlesIndex(req, res, next) {
+    doArticlesSearch(req,res,{});
+}
+
 function articlesSearch(req, res, next) {
     var keyword = req.params.keyword;
-
-    var pageNumber = parseInt(req.query.pn || "1", 10);
-    if (pageNumber < 1) {
-        pageNumber = 1;
-    }
-    var pageSize = 20;
     var condition = {
         "title":{"$regex": new RegExp(keyword), "$options":'i'}
     };
-
-    blogService.getBlogList(condition,pageNumber,pageSize,function(data){
-        res.renderWithSidebar('blog/index', _.extend({
-            title: "查找"
-        },data));
-    });
+    doArticlesSearch(req,res,condition);
 }
 function articlesSearchTag(req, res, next) {
-    res.smartRender("deving",{});
+    var tagName = req.params.tagName;
+    var condition = {
+        "tagString":{"$regex": new RegExp(tagName), "$options":'i'}
+    };
+    doArticlesSearch(req,res,condition);
 }
 function articlesSearchTopicId(req, res, next) {
-    res.smartRender("deving",{});
+    var topicId = req.params.topicId;
+    var condition = {
+        "belongTopicId":topicId
+    };
+    doArticlesSearch(req,res,condition);
 }
 
 function articlesSearchByUserEmail(req, res, next) {
-    res.smartRender("deving",{});
+    var createUserEmail = req.params.createUserEmail;
+    var condition = {
+        "createUserEmail":createUserEmail
+    };
+    doArticlesSearch(req,res,condition);
 }
 
 

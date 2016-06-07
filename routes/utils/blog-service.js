@@ -30,6 +30,10 @@ function getBlogSidebar(callback0){
             function(callback){
                 //管理员推荐的
                 BlogPost.find({isRecommend:true}, callback).sort({ recommendDate : -1 }).limit(4);
+            },
+            function(callback){
+                //文章话题
+                BlogTopic.find({}, callback).sort({ postCount : -1 });
             }
         ],
         function (err, result) {
@@ -39,7 +43,8 @@ function getBlogSidebar(callback0){
                 hotPostList:result[1]||[],
                 newPostList:result[2]||[],
                 newReplyList:result[3]||[],
-                recommendPostList:result[4]||[]
+                recommendPostList:result[4]||[],
+                topicList:result[5]||[]
             };
             callback0 && callback0(err,m);
         }
@@ -66,17 +71,21 @@ function getBlogList(condition,pageNumber,pageSize,callback0){
             var pageCount = parseInt(recordCount / pageSize, 10);
             pageCount = (recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
 
+            if(pageNumber>pageCount){
+                pageNumber = pageCount;
+            }
+
             var layPageHTML = cpPage.toPagination({
                 pageNumber: pageNumber,
                 pageCount: pageCount || 1,
                 linkRender: function (num, text, isEnable) {
-                    return '<a class="ajax-link" ajax-target=".main-body" href="/blog/?pn=' + num + '" >' + text + '</a>';
+                    return '<a class="cp-page-link" pn="'+num+'" >' + text + '</a>';
                 }
             });
 
             callback0({
                 postList: postList,
-                postListPage: layPageHTML
+                pageTemplateString: layPageHTML
             });
         }
     );

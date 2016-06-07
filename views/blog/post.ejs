@@ -9,5 +9,14 @@
             <%-HTML_SIDEBAR %>
         </div>
 
+        <script>
+            window.setTimeout(function(){
+                var mainContainer = document.getElementById("cp-main-container");
+                if(!mainContainer){
+                    window.location.reload();
+                }
+            },1000);
+        </script>
+
     </div>
 </div>

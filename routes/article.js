@@ -23,11 +23,14 @@ function articleView(req, res, next) {
             var comments = post.comments || [];
             for (var i = 0; i < comments.length; i++) {
                 var obj = comments[i];
-                if(!obj.createUserAvatar){
+                if (!obj.createUserAvatar) {
                     obj.createUserAvatar = appConfig.DEFAULT_AVATAR;
                 }
             }
-            res.renderWithSidebar('blog/post', {title: post.title, post: post});
+            var viewCount = post.viewCount || 0;
+            BlogPost.update({_id: id}, {"$set": {"viewCount": viewCount+1}}, function (err, doc) {
+                res.renderWithSidebar('blog/post', {title: post.title, post: post});
+            });
         } else {
             res.renderWithSidebar('blog/post', {title: "Not Found", post: {title: "Not Found"}});
         }
@@ -95,10 +98,18 @@ function articleCreateSave(req, res, next) {
     data.replyCount = 0;
     data.likeCount = 0;
     data.tags = tags;
+    data.tagString = tags.join(",");
     data.isRecommend = data.isRecommend || false;
 
     //新建
     var post = new BlogPost(data);
+
+    //for (var i = 0; i < 1000; i++) {
+    //    var post0 = new BlogPost(data);
+    //    post0.save(post0, function (e, r) {
+    //    });
+    //}
+
     post.save(post, function (e, r) {
         if (e) {
             res.end("err");
@@ -196,6 +207,7 @@ function articleModifySave(req, res, next) {
             updateUserNickName: loginUser.nickname,
             updateUserAvatar: loginUser.avatar,
             tags: tags,
+            tagString:tags.join(","),
             belongTopicId: data.belongTopicId,
             belongTopicTitle: data.belongTopicTitle
         }

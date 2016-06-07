@@ -7,14 +7,21 @@
             </ul>
             <div class="clearfix"></div>
 
-            <div id="ajax-load-posts">
-                <button id="fa-loadmore" class="button button-more" data-home="true" data-paged="2" data-action="fa_load_postlist" data-total="12">加载更多</button>
+            <div id="blogListPageString">
+                <%-pageTemplateString%>
             </div>
         </div>
 
         <div class="sidebar sidebar-right">
             <%-HTML_SIDEBAR %>
         </div>
-
+        <script>
+            window.setTimeout(function(){
+                var mainContainer = document.getElementById("cp-main-container");
+                if(!mainContainer){
+                    window.location.reload();
+                }
+            },1000);
+        </script>
     </div>
 </div>
