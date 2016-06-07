@@ -1,7 +1,14 @@
-<%
-for (var i = 0 ; i < postList.length;i++){
-var post = postList[i];
-%>
+<% if(postList.length===0){ %>
+    <li  class="ajax-load-con content cp-post-item">
+        <div class="content-box posts-aside">
+            没有找到相关文章
+        </div>
+    </li>
+<% } %>
+
+
+<% postList.forEach(function(post,i){ %>
+
 <li class="ajax-load-con content cp-post-item" id="cp-post-item-<%=post._id%>" data-id="<%=post._id%>">
     <div class="content-box posts-aside">
         <div class="posts-default-content">
@@ -51,6 +58,5 @@ var post = postList[i];
     </div>
 </li>
 
-<%
-}
-%>
+
+<% });%>
