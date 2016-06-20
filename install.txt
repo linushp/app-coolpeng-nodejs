@@ -46,3 +46,9 @@ sudo tar --strip-components 1 -xzvf node-v* -C /usr/local
 
 #iptables
 service iptables start
+
+
+
+max:
+    shell: ssh root@ip地址
+    sftp: Cyberduck
