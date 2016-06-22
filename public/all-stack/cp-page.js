@@ -165,5 +165,11 @@ function toPagination(config) {
 //if(exports){
 //    exports.toPagination = toPagination;
 //}
+//exports.toPagination = toPagination;
 
-exports.toPagination = toPagination;
+
+if ( typeof module === "object" && typeof module.exports === "object" ) {
+    module.exports.toPagination = toPagination;
+} else if(window){
+    window.toPagination = toPagination;
+}

@@ -40,6 +40,7 @@ app.use(session({
 
 app.use("/public", express.static(path.join(__dirname, 'public')));
 app.use("/bower_components", express.static(path.join(__dirname, 'bower_components')));
+app.use("/node_modules", express.static(path.join(__dirname, 'node_modules')));
 app.use(partials());
 app.use(cpUtil.smartParseAndRender());
 

@@ -4,7 +4,7 @@ var BlogPost = models.BlogPost;
 var BlogTopic = models.BlogTopic;
 var UserModel = models.UserModel;
 var TagModel = models.TagModel;
-var cpPage = require("./cp-page");
+var cpPage = require("./../../public/all-stack/cp-page");
 
 
 function getBlogSidebar(callback0){

@@ -32,7 +32,8 @@ gulp.task('minifyCommonCss', function () {
     var cssArray=[
         "./public/lib/layer/skin/layer.css",
         "./public/src/theme/style.css",
-        "./public/src/theme/fontello.css"
+        "./public/src/theme/fontello.css",
+        "./public/src/theme/mystyle.css"
     ];
 
     return gulp.src(cssArray).pipe(concat('coolpeng.css'))
@@ -54,10 +55,12 @@ gulp.task('minifyCommonJS', function() {
     var jsArray = [
         './bower_components/ejs/ejs.min.js',
         './public/lib/layer/layer.js',
+        './public/all-stack/cp-page.js',
         "./public/src/theme/theme.js",
         './public/src/js/ajax-link.js',
         './public/src/js/blog-i18n.js',
-        './public/src/js/blog-index.js'
+        './public/src/js/blog-index.js',
+        './public/src/js/album-index.js'
     ];
 
     return gulp.src(jsArray).pipe(concat('coolpeng.js'))

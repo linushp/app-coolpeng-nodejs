@@ -47,7 +47,7 @@ router.get('/favicon.ico', function(req, res, next) {
 
 /* GET home page. */
 router.get('/album', function(req, res, next) {
-  res.smartRender("deving",{});
+  res.smartRender("album/index",{});
 });
 
 /* GET home page. */

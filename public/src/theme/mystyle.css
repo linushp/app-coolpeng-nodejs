@@ -1,0 +1,66 @@
+.clear{
+    clear: both;
+}
+.albumPage{
+    width: 1120px;
+    margin: 0px auto;
+    background: #FFFFFF;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.albumList li.item{
+    width: 242px;
+    float: left;
+    margin-right: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.albumList li.item .bor{
+    position: absolute;
+    width: 242px;
+    height: 162px;
+    border: 1px solid #CCCCCC;
+    left: 2px;
+    top: 2px;
+    z-index: -1;
+}
+
+.albumList li.item .bor1{
+    left: 4px;
+    top: 4px;
+    z-index: -2;
+}
+
+.albumList li.item .bor2{
+    left: 6px;
+    top: 6px;
+    z-index: -3;
+}
+
+.albumList li.item .bor3{
+    left: 8px;
+    top: 8px;
+    z-index: -4;
+}
+
+
+.albumList li.item img{
+    width: 242px;
+    height: 162px;
+    border: 1px solid #CCCCCC;
+}
+
+.albumList li.item a.title{
+    display: block;
+    margin-top: 26px;
+    margin-bottom: 20px;
+    text-indent: 5px;
+    width: 242px;
+    /*height: 30px;*/
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
