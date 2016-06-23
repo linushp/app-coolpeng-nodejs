@@ -75,7 +75,7 @@ gulp.task('minifyCommonJS', function() {
 });
 
 
-gulp.task('revEjsTemplate', function() {
+gulp.task('revTemplate', function() {
     gulp.src(['./public/release/rev/*.json', './views/layout.ejs'])
         .pipe(revCollector())
         .pipe(gulp.dest('./views/release'));
@@ -99,4 +99,4 @@ gulp.task('copyTheme', function() {
 /**
  * 执行所有压缩任务，任务并行执行。
  */
-gulp.task('default', ['minifyCommonJS', 'minifyCommonCss',"revEjsTemplate","copyTheme"]);
+gulp.task('default', ['minifyCommonJS', 'minifyCommonCss',"revTemplate","copyTheme"]);

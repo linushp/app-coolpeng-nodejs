@@ -1807,15 +1807,53 @@ span.link{cursor: pointer;}
 .clear{
     clear: both;
 }
-.albumPage{
-    width: 1120px;
-    margin: 0px auto;
-    background: #FFFFFF;
-    border-radius: 2px;
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+
+
+@media (min-width: 992px){
+
+    .albumPage{
+        width: 1120px;
+        margin: 0px auto;
+        background: #FFFFFF;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
 }
+
+@media (max-width: 990px){
+
+    .albumPage{
+        width: 100%;
+        margin: 0px auto;
+        background: #FFFFFF;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        margin: 0 auto !important;
+    }
+
+    .albumList li.item{
+        width: 242px;
+        float: none !important;
+        margin: 0 auto !important;
+        position: relative;
+        z-index: 1;
+        left: -15px;
+    }
+
+    .albumImageItem{
+        margin-bottom: 30px;
+        margin-right: auto;
+        margin-left: auto;
+        width: 90% !important;
+    }
+}
+
+
 
 .albumList li.item{
     width: 242px;
