@@ -469,6 +469,181 @@ ejs=function(){function require(p){if("fs"==p)return{};if("path"==p)return{};var
         e.run();//f.use("skin/layer.css")
     }()
 }(window);
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === "[object Array]";
+}
+
+
+function isFunction(obj) {
+    return Object.prototype.toString.call(obj) === "[object Function]";
+}
+
+
+/**
+ * demo1:
+ *   {
+ *      pageNumber:1,
+ *      pageCount:10,
+ *      linkRender:function(p){
+ *          return "<a>"
+ *      }
+ *   }
+ *
+ *
+ *   demo2:
+ *   {
+ *      pageNumber:1,
+ *      recordCount:10,
+ *      linkRender:"/blog/dsds?pn="
+ *   }
+ * @param config
+ */
+function toPagination(config) {
+
+    var PRE_BUTTON = "pre";
+    var PRE_GROUP_BUTTON = "preGroup";
+    var NEXT_BUTTON = "next";
+    var NEXT_GROUP_BUTTON = "nextGroup";
+    var HOME_BUTTON = "home";
+
+    var linkSize = config.linkSize || 10;
+    var pageNumber = config.pageNumber || 1;// 当前是第几页
+    var recordCount = config.recordCount || 0;
+    var pageSize = config.pageSize || 20;
+    var pageCount = config.pageCount || (function () {  //总共有多少页
+            var pageCount = parseInt(config.recordCount / pageSize, 10);
+            pageCount = (config.recordCount % pageSize === 0) ? pageCount : (pageCount + 1);
+            return pageCount;
+        })();
+    var buttons = config.buttons || [HOME_BUTTON, PRE_BUTTON, NEXT_BUTTON, PRE_GROUP_BUTTON, NEXT_GROUP_BUTTON];
+    var linkRender = function (number, text, isEnable) {
+        if (isFunction(config.linkRender)) {
+            return config.linkRender(number, text, isEnable);
+        }
+        var clazz = isEnable ? "" : "disabled";
+        return "<a class='" + clazz + "' href='" + config.linkRender + number + "'>" + text + "</a>";
+    };
+
+
+    function hasButton(btnName) {
+        var buttons = buttons;
+        if (!isArray(buttons)) {
+            return false;
+        }
+        return (buttons.indexOf(btnName) >= 0);
+    }
+
+    function pageNowGroup() {// 从1开始的
+        return parseInt((pageNumber - 1) / linkSize) + 1;
+    }
+
+    function isNowFirstGroup() {
+        return pageNowGroup() == 1;
+    }
+
+    function isNowLastGroup() {
+        return pageNowGroup() == groupSize();
+    }
+
+    function groupSize() {// 从1开始
+        return parseInt((pageCount - 1) / linkSize) + 1;
+    }
+
+    function getGroupBeginNoByNow() {
+        return linkSize * (pageNowGroup() - 1) + 1;
+    }
+
+    function getGroupEndNoByNow() {
+        if (isNowLastGroup()) {
+            return pageCount;
+        }
+        else {
+            return getGroupBeginNoByNow() + (linkSize - 1);
+        }
+    }
+
+    function generateNextGroupLink(begin) {
+        return linkRender(begin, "...", true);
+    }
+
+    function generatePreGroupLink(end) {
+        return linkRender(end, "...", true);
+    }
+
+    function generateOneLink(i) {
+        if (i == pageNumber) {
+            return "<span>" + i + "</span>";
+        } else {
+            return linkRender(i, i, true);
+        }
+    }
+
+    function generateLinks(begin, end) {
+        var links = [];
+        for (var i = begin; i <= end; i++) {
+            links.push(generateOneLink(i));
+        }
+        return links.join("");
+    }
+
+    function generateAllLinks() {
+        var links = [];
+
+        var begin = getGroupBeginNoByNow();
+        var end = getGroupEndNoByNow();
+        if (pageCount <= linkSize) {
+            links.push(generateLinks(1, pageCount));
+        } else {
+            if (isNowFirstGroup()) {
+                links.push(generateLinks(begin, end));
+                links.push(generateNextGroupLink(end + 1));
+            } else if (isNowLastGroup()) {
+                links.push(generatePreGroupLink(begin - 1));
+                links.push(generateLinks(begin, end));
+            } else {
+                links.push(generatePreGroupLink(begin - 1));
+                links.push(generateLinks(begin, end));
+                links.push(generateNextGroupLink(end + 1));
+            }
+        }
+        return links.join("");
+    }
+
+
+    function toPaginationHtml() {
+        var htmlArray = [];
+        htmlArray.push("<div class='cp-pagination'>");
+
+        if (hasButton(HOME_BUTTON)) {
+            htmlArray.push(linkRender(1, "首页", true));
+            htmlArray.push(generateAllLinks());
+            htmlArray.push(linkRender(pageCount, "尾页", true));
+        } else {
+            htmlArray.push(generateAllLinks());
+        }
+
+        htmlArray.push("</div>");
+        return htmlArray.join("");
+    }
+
+
+    return toPaginationHtml();
+}
+
+//if(window){
+//    window.toPagination = toPagination;
+//}
+//if(exports){
+//    exports.toPagination = toPagination;
+//}
+//exports.toPagination = toPagination;
+
+
+if ( typeof module === "object" && typeof module.exports === "object" ) {
+    module.exports.toPagination = toPagination;
+} else if(window){
+    window.toPagination = toPagination;
+}
 //tip
 jQuery(document).ready(function ($) {
     $("#tooltip-weixin,#tooltip-qq,#tooltip-f-qq,#tooltip-f-weixin,#tooltip-mail-2").click(
@@ -926,5 +1101,141 @@ jQuery(document).ready(function ($) {
         var href = window.location.pathname+"?pn=" + pn;
         ajaxGoTo(".main-body", href, "server", $this);
     });
+
+});
+jQuery(document).ready(function ($) {
+
+
+    var albumPageSize = 16;
+    var currentAlbumListPageNumber = 1;
+
+    var albumDataStore = {
+        imgs_g:[],
+        imgs:[]
+    };
+
+
+    $(document).on('click','#albumContainer .albumPageLink',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $link = $(this);
+        var pn = $link.attr('pn');
+        renderAlbumList(pn);
+    });
+
+
+
+    $(document).on('click','.goToAlbumImageList',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $btn = $(this);
+        $("#albumContainer").empty();
+        var pid = $btn.closest('.albumItem').attr('pid');
+        pid = parseInt(pid,10);
+        renderImageList(pid);
+    });
+
+
+    function renderImageList(pid){
+        var imgList = getImageList(pid);
+        var htmlArr = [];
+        for(var i=0;i<imgList.length;i++){
+            var img = imgList[i];
+            var imgURL = "http://image.coolpeng.cn/"+img.p+"@s_0,w_500,q_90";
+            var html = '' +
+                '<div class="albumImageItem">' +
+                '   <img src="'+imgURL+'">' +
+                '</div>';
+            htmlArr.push(html);
+        }
+
+        var htmlString = htmlArr.join('');
+        $("#albumContainer").append(htmlString);
+    }
+
+    function getImageList(pid){
+        var imgs = albumDataStore.imgs||[];
+        var len = imgs.length;
+        var result = [];
+        for(var i = 0 ;i<len;i++){
+            var img = imgs[i];
+            if (pid==img['pid']){
+                result.push(img);
+            }
+        }
+        return result;
+    }
+
+
+    function renderAlbumListPage(pageNumber){
+        var recordCount = albumDataStore.imgs_g.length;
+        var layPageHTML = toPagination({
+            pageNumber: pageNumber,
+            pageSize:albumPageSize,
+            recordCount: recordCount || 1,
+            linkRender: function (num, text, isEnable) {
+                return '<a class="cp-page-link albumPageLink" pn="'+num+'" >' + text + '</a>';
+            }
+        });
+        $("#albumContainer").append(layPageHTML);
+    }
+
+    function renderAlbumListBox(pageNumber){
+        var albums = albumDataStore.imgs_g || [];
+        var start = (pageNumber-1)*albumPageSize;
+        var end = (pageNumber)*albumPageSize;
+        var albumNowPage = albums.slice(start,end);
+
+        var htmlArr = [];
+        for(var i = 0 ;i< albumNowPage.length;i++){
+            var m = albumNowPage[i];
+            var t = '' +
+                '<li class="item albumItem" pid="'+m.pid+'">' +
+                '   <div class="img">' +
+                '       <a href="/album" class="ztag goToAlbumImageList">' +
+                '           <span class="bor"></span>' +
+                '           <span class="bor bor1"></span>' +
+                '           <span class="bor bor2"></span>' +
+                '           <img src="http://image.coolpeng.cn/'+m.img+'@s_0,w_242,q_90" class="ztag">' +
+                '       </a>' +
+                '   </div>' +
+                '   <div>' +
+                '       <a href="/album" target="_blank" class="title goToAlbumImageList">'+m.ptitle+'</a>' +
+                '   </div>' +
+                '</li>';
+            htmlArr.push(t);
+        }
+
+        var html = '' +
+            '<ul class="albumList">' +
+                htmlArr.join('') +
+            '</ul>' +
+            '<div class="clear"></div>';
+        $("#albumContainer").append(html);
+    }
+
+    function renderAlbumList(pageNumber){
+        currentAlbumListPageNumber = pageNumber;
+        $("#albumContainer").empty();
+        renderAlbumListBox(pageNumber);
+        renderAlbumListPage(pageNumber);
+    }
+
+
+    function coolpengAlbumInit(){
+        $.get('/public/static/data/imgs.json',function(d){
+            albumDataStore = d;
+            renderAlbumList(1);
+        });
+    }
+
+
+
+    if(window.coolpengAlbumNextInit===true){
+        coolpengAlbumInit();
+        window.coolpengAlbumNextInit = false;
+    }
+
+    window.coolpengAlbumInit = coolpengAlbumInit;
 
 });

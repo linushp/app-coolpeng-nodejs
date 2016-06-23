@@ -26,11 +26,40 @@ jQuery(document).ready(function ($) {
         var $btn = $(this);
         $("#albumContainer").empty();
         var pid = $btn.closest('.albumItem').attr('pid');
-
-        //TODO
-
-
+        pid = parseInt(pid,10);
+        renderImageList(pid);
     });
+
+
+    function renderImageList(pid){
+        var imgList = getImageList(pid);
+        var htmlArr = [];
+        for(var i=0;i<imgList.length;i++){
+            var img = imgList[i];
+            var imgURL = "http://image.coolpeng.cn/"+img.p+"@s_0,w_500,q_90";
+            var html = '' +
+                '<div class="albumImageItem">' +
+                '   <img src="'+imgURL+'">' +
+                '</div>';
+            htmlArr.push(html);
+        }
+
+        var htmlString = htmlArr.join('');
+        $("#albumContainer").append(htmlString);
+    }
+
+    function getImageList(pid){
+        var imgs = albumDataStore.imgs||[];
+        var len = imgs.length;
+        var result = [];
+        for(var i = 0 ;i<len;i++){
+            var img = imgs[i];
+            if (pid==img['pid']){
+                result.push(img);
+            }
+        }
+        return result;
+    }
 
 
     function renderAlbumListPage(pageNumber){

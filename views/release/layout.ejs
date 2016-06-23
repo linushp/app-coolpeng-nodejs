@@ -15,8 +15,9 @@
     <link rel='stylesheet' href='/public/lib/layer/skin/layer.css' type="text/css" media="all"/>
     <link rel='stylesheet' href='/public/src/theme/style.css' type="text/css" media="all"/>
     <link rel="stylesheet" href="/public/src/theme/fontello.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/public/src/theme/mystyle.css" type="text/css" media="all">
     <% }else{ %>
-    <link rel="stylesheet" href="/public/release/css/coolpeng-5c64607a9f.min.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/public/release/css/coolpeng-79a11b02ab.min.css" type="text/css" media="all">
     <%}%>
 
 </head>
@@ -141,12 +142,14 @@
 <%if(_ENVIRONMENT=="development"){%>
 <script src="/bower_components/ejs/ejs.min.js"></script>
 <script src="/public/lib/layer/layer.js"></script>
+<script src="/public/all-stack/cp-page.js"></script>
 <script src="/public/src/theme/theme.js"></script>
 <script src="/public/src/js/ajax-link.js"></script>
 <script src="/public/src/js/blog-i18n.js"></script>
 <script src="/public/src/js/blog-index.js"></script>
+<script src="/public/src/js/album-index.js"></script>
 <%}else{%>
-<script src="/public/release/js/coolpeng-265c10e5e9.min.js"></script>
+<script src="/public/release/js/coolpeng-f36a275ebf.min.js"></script>
 <% }%>
 
 <%-PAGE_FOOTER%>

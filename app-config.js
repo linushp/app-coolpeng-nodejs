@@ -1,10 +1,12 @@
 function getEnvironment() {
 
-    if(process.env.NODE_ENV =="production"){
-        return "release";
-    }else {
-        return "development";
-    }
+    //if(process.env.NODE_ENV =="production"){
+    //    return "release";
+    //}else {
+    //    return "development";
+    //}
+
+    return 'release'
 }
 var _ENVIRONMENT = getEnvironment();
 
